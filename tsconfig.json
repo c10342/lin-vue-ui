@@ -13,6 +13,8 @@
     "noImplicitAny":false,
     "sourceMap": true,
     "baseUrl": "./",
+    "declaration": true,
+    "declarationDir": "types",
     "paths": {
       "packages/*": [
         "./packages/*"
