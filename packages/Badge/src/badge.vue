@@ -10,38 +10,36 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'LinBadge',
-  props: {
-    value: {
-      type: [String, Number],
-      default: ''
-    },
-    max: {
-      type: Number
-    },
-    isDot: {
-      type: Boolean,
-      default: false
-    },
-    type: {
-      type: String,
-      default: 'primary'
-    }
-  },
-  computed: {
-    text () {
-      if (typeof this.value === 'string') {
-        return this.value;
-      } if (typeof this.value === 'number') {
-        if (this.max && this.max < this.value) {
-          return `${this.max}+`;
-        }
-        return this.value;
+<script lang="ts">
+import { Vue, Component, Prop } from 'vue-property-decorator';
+
+@Component({
+  name: 'LinBadge'
+})
+export default class LinBadge extends Vue {
+  @Prop({ type: [String, Number], default: '' })
+  value!:string|number;
+
+  @Prop({ type: Number })
+  max!:number;
+
+  @Prop({ type: Boolean, default: false })
+  isDot!:boolean;
+
+  @Prop({ type: String, default: 'primary' })
+  type!:string
+
+  get text () {
+    if (typeof this.value === 'string') {
+      return this.value;
+    } if (typeof this.value === 'number') {
+      if (this.max && this.max < this.value) {
+        return `${this.max}+`;
       }
-      return '';
+      return this.value;
     }
+    return '';
   }
-};
+}
+
 </script>
