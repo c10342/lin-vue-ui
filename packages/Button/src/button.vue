@@ -26,63 +26,51 @@
   </button>
 </template>
 
-<script>
+<script lang="ts">
+import { Vue, Component, Prop } from 'vue-property-decorator';
 import Spinner from 'packages/Spinner/index.js';
 
-export default {
+@Component({
   name: 'LinButton',
   components: {
     [Spinner.name]: Spinner
-  },
-  props: {
-    type: {
-      type: String,
-      default: 'default'
-    },
-    plain: {
-      type: Boolean,
-      default: false
-    },
-    round: {
-      type: Boolean,
-      default: false
-    },
-    circle: {
-      type: Boolean,
-      default: false
-    },
-    disabled: {
-      type: Boolean,
-      default: false
-    },
-    icon: {
-      type: String,
-      default: ''
-    },
-    size: {
-      type: String,
-      default: 'default'
-    },
-    loading: {
-      type: Boolean,
-      default: false
-    },
-    loadingColor: {
-      type: String,
-      default: '#fff'
-    },
-    loadingSize: {
-      type: String,
-      default: '14px'
-    }
-  },
+  }
+})
+export default class LinButton extends Vue {
+  @Prop({ type: String, default: 'default' })
+  type!: string;
 
-  methods: {
-    onButtonClick () {
-      if (!this.loading) {
-        this.$emit('click');
-      }
+  @Prop({ type: Boolean, default: false })
+  plain!: boolean;
+
+  @Prop({ type: Boolean, default: false })
+  round!: boolean;
+
+  @Prop({ type: Boolean, default: false })
+  circle!: boolean;
+
+  @Prop({ type: Boolean, default: false })
+  disabled!: boolean;
+
+  @Prop({ type: String, default: '' })
+  icon!: string;
+
+  @Prop({ type: String, default: 'default' })
+  size!: string;
+
+  @Prop({ type: Boolean, default: false })
+  loading!: boolean;
+
+  @Prop({ type: String, default: '#fff' })
+  loadingColor!: string;
+
+  @Prop({ type: String, default: '14px' })
+  loadingSize!: string;
+
+  onButtonClick () {
+    if (!this.loading) {
+      this.$emit('click');
     }
   }
-};
+}
 </script>
