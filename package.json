@@ -114,6 +114,7 @@
     "@babel/runtime-corejs3": "^7.12.5",
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-conventional": "^11.0.0",
+    "@types/webpack-env": "^1.16.0",
     "@typescript-eslint/eslint-plugin": "^4.15.1",
     "@typescript-eslint/parser": "^4.15.1",
     "@vue/babel-helper-vue-jsx-merge-props": "^1.2.1",
