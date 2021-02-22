@@ -7,7 +7,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const baseConfig = require("./webpack.build.base");
 
 const output = path.resolve(__dirname, "../lib");
-const entry = path.resolve(__dirname, "../src/index.js");
+const entry = path.resolve(__dirname, "../src/index.ts");
 
 const indexConfig = {
   entry,
