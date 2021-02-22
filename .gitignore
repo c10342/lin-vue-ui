@@ -6,6 +6,7 @@ node_modules
 /utils
 /build/userInfo.js
 /debug.log
+/types
 
 # local env files
 .env.local
