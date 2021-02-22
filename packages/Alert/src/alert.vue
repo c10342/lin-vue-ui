@@ -31,51 +31,42 @@
   </transition>
 </template>
 
-<script>
-export default {
-  name: 'LinAlert',
-  props: {
-    title: {
-      type: String,
-      default: ''
-    },
-    description: {
-      type: String,
-      default: ''
-    },
-    icon: {
-      type: String,
-      default: ''
-    },
-    closable: {
-      type: Boolean,
-      default: false
-    },
-    type: {
-      type: String,
-      default: 'success'
-    },
-    effect: {
-      type: String,
-      default: 'light'
-    },
-    center: {
-      type: Boolean,
-      default: false
-    }
-  },
-  data () {
-    return {
-      show: true
-    };
-  },
-  methods: {
-    onCloseClick () {
-      this.show = false;
-    },
-    afterLeave () {
-      this.$emit('close');
-    }
+<script lang="ts">
+import { Vue, Component, Prop } from 'vue-property-decorator';
+
+@Component({
+  name: 'LinAlert'
+})
+export default class LinAlert extends Vue {
+  @Prop({ type: String, default: '' })
+  title!: string;
+
+  @Prop({ type: String, default: '' })
+  description!: string;
+
+  @Prop({ type: String, default: '' })
+  icon!: string;
+
+  @Prop({ type: Boolean, default: false })
+  closable!: boolean;
+
+  @Prop({ type: String, default: 'success' })
+  type!: string;
+
+  @Prop({ type: String, default: 'light' })
+  effect!: string;
+
+  @Prop({ type: Boolean, default: false })
+  center!: boolean;
+
+  show = true;
+
+  onCloseClick () {
+    this.show = false;
   }
-};
+
+  afterLeave () {
+    this.$emit('close');
+  }
+}
 </script>
