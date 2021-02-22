@@ -13,21 +13,25 @@ module.exports = {
   },
   extends: [
     'plugin:vue/essential',
-    'standard'
+    'standard',
+    'plugin:@typescript-eslint/recommended'
   ],
+  parser: 'vue-eslint-parser',
   parserOptions: {
     ecmaVersion: 12,
     sourceType: 'module',
     // ecmaFeatures: {
     //   jsx: true, // 启动JSX
     // },
-    parser: 'babel-eslint'
+    // parser: 'babel-eslint',
+    // ecmaFeatures: {
+    //   legacyDecorators: true
+    // }
+    parser: '@typescript-eslint/parser'
   },
-  plugins: [
-    'vue'
-  ],
+  plugins: ['vue', '@typescript-eslint'],
   rules: {
-    'import/extensions': ['error', 'always'],
+    // 'import/extensions': ['error', 'always'],
     'prefer-destructuring': 'off',
     'no-param-reassign': 'off',
     'no-plusplus': 'off',
@@ -36,6 +40,9 @@ module.exports = {
     'no-underscore-dangle': 'off',
     'import/no-named-as-default-member': 'off',
     semi: ['error', 'always'],
-    'node/no-callback-literal': 'off'
+    'node/no-callback-literal': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
+    '@typescript-eslint/no-this-alias': 'off'
   }
 };
