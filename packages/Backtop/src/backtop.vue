@@ -15,90 +15,93 @@
   </transition>
 </template>
 
-<script>
+<script lang="ts">
+import { Vue, Component, Prop } from 'vue-property-decorator';
 import { throttle } from 'lodash';
+import { ThrottledScrollHandler } from './type';
 
 const cubic = (value) => value ** 3;
 const easeInOutCubic = (value) => {
-  const percent = (value < 0.5 ? cubic(value * 2) / 2 : 1 - cubic((1 - value) * 2) / 2);
+  const percent =
+    value < 0.5 ? cubic(value * 2) / 2 : 1 - cubic((1 - value) * 2) / 2;
   return percent;
 };
 
-export default {
-  name: 'LinBacktop',
-  props: {
-    right: {
-      type: Number,
-      default: 40
-    },
-    bottom: {
-      type: Number,
-      default: 40
-    },
-    target: {
-      type: String,
-      default: null
-    },
-    visibilityHeight: {
-      type: Number,
-      default: 200
-    }
-  },
-  data () {
-    return {
-      visible: false
-    };
-  },
+@Component({
+  name: 'LinBacktop'
+})
+export default class LinBacktop extends Vue {
+  @Prop({ type: Number, default: 40 })
+  right!: number;
+
+  @Prop({ type: Number, default: 40 })
+  bottom!: number;
+
+  @Prop({ type: String, default: null })
+  target!: string;
+
+  @Prop({ type: Number, default: 200 })
+  visibilityHeight!: number;
+
+  visible = false;
+
+  el: HTMLElement | null = null;
+
+  container: HTMLElement | Document | null = null;
+
+  throttledScrollHandler: ThrottledScrollHandler = throttle(this.onScroll, 300);
+
   mounted () {
-    this.el = null;
-    this.container = null;
     this.init();
-    this.throttledScrollHandler = throttle(this.onScroll, 300);
-    this.container.addEventListener('scroll', this.throttledScrollHandler);
-  },
-  methods: {
-    init () {
-      this.container = document;
-      this.el = document.documentElement || document.body;
-      if (this.target) {
-        this.el = document.querySelector(this.target);
-        if (!this.el) {
-          throw new Error(`target is not existed: ${this.target}`);
-        }
-        this.container = this.el;
-      }
-    },
-    onScroll () {
-      const { scrollTop } = this.el;
-      this.visible = scrollTop >= this.visibilityHeight;
-    },
-    onClick (e) {
-      this.scrollToTop();
-      this.$emit('click', e);
-    },
-    scrollToTop () {
-      const { el } = this;
-      const beginTime = Date.now();
-      const beginValue = el.scrollTop;
-      const rAF = window.requestAnimationFrame || ((func) => setTimeout(func, 16));
-      const frameFunc = () => {
-        const progress = (Date.now() - beginTime) / 500;
-        if (progress < 1) {
-          el.scrollTop = beginValue * (1 - easeInOutCubic(progress));
-          this.$emit('scroll', el.scrollTop);
-          rAF(frameFunc);
-        } else {
-          el.scrollTop = 0;
-          this.$emit('end');
-        }
-      };
-      rAF(frameFunc);
-    }
-  },
+    this.container?.addEventListener('scroll', this.throttledScrollHandler);
+  }
+
   beforeDestroy () {
-    this.container.removeEventListener('scroll', this.throttledScrollHandler);
+    this.container?.removeEventListener('scroll', this.throttledScrollHandler);
     this.el = null;
     this.container = null;
   }
-};
+
+  init () {
+    this.container = document;
+    this.el = document.documentElement || document.body;
+    if (this.target) {
+      this.el = document.querySelector(this.target);
+      if (!this.el) {
+        throw new Error(`target is not existed: ${this.target}`);
+      }
+      this.container = this.el;
+    }
+  }
+
+  onScroll () {
+    const { scrollTop } = this.el as HTMLElement;
+    this.visible = scrollTop >= this.visibilityHeight;
+  }
+
+  onClick (e) {
+    this.scrollToTop();
+    this.$emit('click', e);
+  }
+
+  scrollToTop () {
+    const el = this.el as HTMLElement;
+    const beginTime = Date.now();
+    const beginValue = el.scrollTop;
+    const rAF =
+      window.requestAnimationFrame || ((func) => setTimeout(func, 16));
+    const frameFunc = () => {
+      const progress = (Date.now() - beginTime) / 500;
+      if (progress < 1) {
+        el.scrollTop = beginValue * (1 - easeInOutCubic(progress));
+        this.$emit('scroll', el.scrollTop);
+        rAF(frameFunc);
+      } else {
+        el.scrollTop = 0;
+        this.$emit('end');
+      }
+    };
+    rAF(frameFunc);
+  }
+}
 </script>
