@@ -13,7 +13,7 @@ const baseConfig = {
     extensions: [".ts", ".tsx", ".js", ".jsx", "md", ".vue", ".json"],
     alias: {
       packages: path.join(__dirname, "../packages"),
-      "lin-view-ui": path.join(__dirname, "../src/index.js"),
+      "lin-view-ui": path.join(__dirname, "../src/index.ts"),
       src: path.join(__dirname, "../src")
     }
   },
