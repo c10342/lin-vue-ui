@@ -22,7 +22,8 @@
     "lib",
     "packages",
     "utils",
-    "src"
+    "src",
+    "types"
   ],
   "scripts": {
     "docs:dev": "cross-env NODE_ENV=development webpack-dev-server --config ./build/webpack.docs.js",
