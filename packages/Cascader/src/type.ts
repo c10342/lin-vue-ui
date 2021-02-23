@@ -7,8 +7,15 @@ export interface ShowFormat{
     (value:[]):string
 }
 
+export interface OptionsListItem{
+    value:string|number,
+    label:string,
+    leaf:number,
+    id:string|number
+}
+
 export interface LazyLoad{
-    (value:{level:number, data?:any}):Array<{value:string|number, label:string, leaf:number, id:string|number}>
+    (value:{level:number, data?:any}):Array<OptionsListItem>
 }
 
 export interface OptionsItem{
