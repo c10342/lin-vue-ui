@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import dispatch from 'src/utils/dispatch.js';
+import dispatch from 'src/utils/dispatch';
 
 export default {
   name: 'LinInputNumber',
@@ -90,7 +90,7 @@ export default {
     },
     emitInputEvent (value) {
       this.$emit('input', value);
-      dispatch.call(this, {
+      dispatch(this, {
         eventName: 'validate',
         componentName: 'LinFormItem'
       });
