@@ -7,6 +7,7 @@
   "main": "lib/index.js",
   "module": "lib/index.js",
   "unpkg": "lib/index.js",
+  "typings": "types/index.d.ts",
   "license": "MIT",
   "keywords": [
     "vue",
@@ -31,7 +32,7 @@
     "index:build": "webpack --config ./build/webpack.all.js",
     "component:build": "webpack --config ./build/webpack.component.js && node ./build/write.js",
     "assets:build": "webpack --config ./build/webpack.assets.js",
-    "build": "rimraf lib && npm run index:build && npm run component:build && npm run assets:build",
+    "build": "rimraf lib && rimraf types && npm run index:build && npm run component:build && npm run assets:build",
     "docs:upload": "npm run docs:build && node ./build/qiniu.js",
     "prepublishOnly": "npm run build",
     "pub": "node ./build/publish.js",
