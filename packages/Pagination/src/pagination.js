@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import './style.scss';
-import LocaleMixin from 'src/mixins/locale.js';
+import LocaleMixin from 'src/mixins/locale';
 
 import 'src/fonts/iconfont.css';
 
