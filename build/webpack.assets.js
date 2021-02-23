@@ -15,6 +15,9 @@ const getAssetsEntries = (pathStr) => {
     const myPath = resolve(`${itemPath}`);
     const stat = fs.lstatSync(myPath);
     if (stat.isFile()) {
+      if(item.endsWith('.ts')){
+        item = item.replace(/\.ts$/,'.js')
+      }
       ret[`${pathStr}/${item}`] = myPath;
     } else {
       const result = getAssetsEntries(`${pathStr}/${item}`);
@@ -34,7 +37,6 @@ const entry = {
   ...getAssetsEntries("mixins"),
   ...getAssetsEntries("utils"),
 };
-
 const assetsConfig = {
   mode: "production",
   entry: entry,
