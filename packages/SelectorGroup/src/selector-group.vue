@@ -1,5 +1,5 @@
 <script>
-import LocaleMixin from 'src/mixins/locale.js';
+import LocaleMixin from 'src/mixins/locale';
 
 const oneHeight = 26;
 export default {
