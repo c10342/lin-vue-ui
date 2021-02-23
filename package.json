@@ -175,11 +175,9 @@
     "typescript": "^4.1.5",
     "url-loader": "^4.1.1",
     "vue": "^2.6.12",
-    "vue-class-component": "^7.2.6",
     "vue-eslint-parser": "^7.5.0",
     "vue-jest": "^3.0.7",
     "vue-loader": "^15.9.6",
-    "vue-property-decorator": "^9.1.2",
     "vue-router": "^3.4.9",
     "vue-template-compiler": "^2.6.12",
     "webpack": "^4.42.0",
@@ -197,6 +195,8 @@
     "hls.js": "^0.14.17",
     "lodash": "^4.17.20",
     "resize-observer-polyfill": "^1.5.1",
-    "spark-md5": "^3.0.1"
+    "spark-md5": "^3.0.1",
+    "vue-class-component": "^7.2.6",
+    "vue-property-decorator": "^9.1.2"
   }
 }
