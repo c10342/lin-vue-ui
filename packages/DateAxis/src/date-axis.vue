@@ -91,10 +91,10 @@
 
 <script>
 import DatePicker from 'packages/DatePicker/index.js';
-import documentClick from 'src/mixins/documentClick.js';
-import LocaleMixin from 'src/mixins/locale.js';
-import DateMixin from 'src/mixins/date.js';
-import getYearMonthDay from 'src/utils/getYearMonthDay.js';
+import documentClick from 'src/mixins/documentClick';
+import LocaleMixin from 'src/mixins/locale';
+import DateMixin from 'src/mixins/date';
+import getYearMonthDay from 'src/utils/getYearMonthDay';
 import { throttle } from 'lodash';
 
 export default {
