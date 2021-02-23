@@ -72,7 +72,17 @@ const getExternalsList = () => {
     file = path.basename(file);
     externals[`src/images/${file}`] = `lin-view-ui/src/images/${file}`;
   });
-  return externals;
+
+  const externalsObj = {}
+  Object.keys(externals).forEach(key=>{
+    let value = externals[key]
+    if(typeof key ==='string' && typeof value==='string'){
+      key = key.replace(/\.ts$/,'')
+      value = value.replace(/\.ts$/,'.js')
+    }
+    externalsObj[key] = value
+  })
+  return externalsObj;
 };
 
 const output = path.resolve(__dirname, "../lib");
