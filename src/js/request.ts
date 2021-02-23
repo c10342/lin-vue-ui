@@ -30,10 +30,11 @@ function request ({
         const xhrIndex = requestList.findIndex((item) => item === xhr);
         requestList.splice(xhrIndex, 1);
 
-        let upList = [];
-        if (window.localStorage.getItem(fileHash)) {
+        let upList:string[] = [];
+        const str = window.localStorage.getItem(fileHash);
+        if (str) {
           try {
-            upList = JSON.parse(window.localStorage.getItem(fileHash));
+            upList = JSON.parse(str);
           } catch (error) {
             // todo
           }
@@ -42,8 +43,7 @@ function request ({
 
         window.localStorage.setItem(fileHash, JSON.stringify(upList));
       }
-
-      resolve(e.target.response);
+      resolve((e.target as any)?.response);
     };
     if (requestList) {
       requestList.push(xhr);
