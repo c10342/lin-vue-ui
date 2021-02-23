@@ -12,8 +12,8 @@
 
 <script>
 import LinButton from 'packages/Button/index.ts';
-import splitFileChunk from 'src/utils/splitFileChunk.js';
-import caculateFileHash from 'src/utils/caculateFileHash.js';
+import splitFileChunk from 'src/utils/splitFileChunk';
+import caculateFileHash from 'src/utils/caculateFileHash';
 import request from 'src/js/request.js';
 
 export default {
