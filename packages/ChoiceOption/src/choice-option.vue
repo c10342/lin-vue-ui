@@ -9,23 +9,25 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'LinChoiceOption',
-  props: {
-    label: {
-      type: String,
-      default: ''
-    },
-    disabled: {
-      type: Boolean,
-      default: false
-    }
-  },
-  provide () {
-    return {
-      option: this
-    };
-  }
-};
+<script lang="ts">
+import {
+  Vue,
+  Component,
+  Prop,
+  ProvideReactive
+} from 'vue-property-decorator';
+
+@Component({
+  name: 'LinChoiceOption'
+})
+export default class LinChoiceOption extends Vue {
+  @Prop({ type: String, default: '' })
+  label!:string
+
+  @Prop({ type: Boolean, default: false })
+  disabled!:boolean
+
+  @ProvideReactive()
+  option = this
+}
 </script>
