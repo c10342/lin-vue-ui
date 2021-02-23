@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import dispatch from 'src/utils/dispatch.js';
+import dispatch from 'src/utils/dispatch';
 
 export default {
   name: 'LinCheckbox',
@@ -48,7 +48,7 @@ export default {
         } else {
           this.$emit('input', value);
         }
-        dispatch.call(this, {
+        dispatch(this, {
           eventName: 'validate',
           componentName: 'LinFormItem'
         });
