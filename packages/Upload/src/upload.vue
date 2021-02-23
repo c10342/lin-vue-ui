@@ -14,7 +14,7 @@
 import LinButton from 'packages/Button/index.ts';
 import splitFileChunk from 'src/utils/splitFileChunk';
 import caculateFileHash from 'src/utils/caculateFileHash';
-import request from 'src/js/request.js';
+import request from 'src/js/request';
 
 export default {
   name: 'LinUpload',
