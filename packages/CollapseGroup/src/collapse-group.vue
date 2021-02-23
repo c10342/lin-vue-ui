@@ -4,66 +4,56 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { Vue, Component, Prop, ProvideReactive } from 'vue-property-decorator';
 import { cloneDeep } from 'lodash';
 
-export default {
-  name: 'LinCollapseGroup',
-  props: {
-    value: {
-      type: [Array, String]
-    },
-    accordion: {
-      type: Boolean,
-      default: false
-    },
-    simple: {
-      type: Boolean,
-      default: false
+@Component({
+  name: 'LinCollapseGroup'
+})
+export default class LinCollapseGroup extends Vue {
+  @Prop({ type: [Array, String] })
+  value!: Array<string | number> | string;
+
+  @Prop({ type: Boolean, default: false })
+  accordion!: boolean;
+
+  @Prop({ type: Boolean, default: false })
+  simple!: boolean;
+
+  @ProvideReactive()
+  collapseGroup = this;
+
+  valueData = '';
+
+  get collapseValue () {
+    if (typeof this.value === 'string' || Array.isArray(this.value)) {
+      return this.value;
     }
-  },
-  computed: {
-    collapseValue: {
-      get () {
-        if (typeof this.value === 'string' || Array.isArray(this.value)) {
-          return this.value;
-        }
-        return this.valueData;
-      },
-      set (val) {
-        if (typeof this.value === 'string' || Array.isArray(this.value)) {
-          this.$emit('input', this.handleData(val));
-        } else {
-          this.valueData = this.handleData(val);
-        }
-        this.$emit('onChange', val);
-      }
-    }
-  },
-  provide () {
-    return {
-      collapseGroup: this
-    };
-  },
-  data () {
-    return {
-      valueData: ''
-    };
-  },
-  methods: {
-    handleData (data) {
-      let da;
-      if (this.accordion) {
-        if (data.length > 0) {
-          da = data[0];
-        } else {
-          da = '';
-        }
-      } else {
-        da = data;
-      }
-      return cloneDeep(da);
-    }
+    return this.valueData;
   }
-};
+
+  set collapseValue (val) {
+    if (typeof this.value === 'string' || Array.isArray(this.value)) {
+      this.$emit('input', this.handleData(val));
+    } else {
+      this.valueData = this.handleData(val);
+    }
+    this.$emit('onChange', val);
+  }
+
+  handleData (data) {
+    let da;
+    if (this.accordion) {
+      if (data.length > 0) {
+        da = data[0];
+      } else {
+        da = '';
+      }
+    } else {
+      da = data;
+    }
+    return cloneDeep(da);
+  }
+}
 </script>
