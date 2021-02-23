@@ -1,52 +1,51 @@
 import './style.scss';
+import { Vue, Component, Prop, InjectReactive } from 'vue-property-decorator';
+import { Style, RowItem } from './type';
 
-export default {
-  name: 'LinCol',
+@Component({
+  name: 'LinCol'
+})
+export default class LinCol extends Vue {
+  @Prop({ type: String, default: 'div' })
+  tag!: string
 
-  props: {
-    tag: {
-      type: String,
-      default: 'div'
-    },
-    span: {
-      type: Number,
-      default: 24
-    },
-    offset: {
-      type: Number,
-      default: 0
-    },
-    pull: {
-      type: Number,
-      default: 0
-    },
-    push: {
-      type: Number,
-      default: 0
-    },
-    xs: [Number, Object],
-    sm: [Number, Object],
-    md: [Number, Object],
-    lg: [Number, Object]
-  },
+  @Prop({ type: Number, default: 24 })
+  span!: number
 
-  inject: {
-    row: {
-      default: ''
+  @Prop({ type: Number, default: 0 })
+  offset!: number
+
+  @Prop({ type: Number, default: 0 })
+  pull!: number
+
+  @Prop({ type: Number, default: 0 })
+  push!: number
+
+  @Prop({ type: [Number, Object] })
+  xs!: number | Record<string, string|number>
+
+  @Prop({ type: [Number, Object] })
+  sm!: number | Record<string, string|number>
+
+  @Prop({ type: [Number, Object] })
+  md!: number | Record<string, string|number>
+
+  @Prop({ type: [Number, Object] })
+  lg!: number | Record<string, string | number>
+
+  @InjectReactive('')
+  row!: RowItem
+
+  get gutter () {
+    if (this.row) {
+      return this.row.gutter;
     }
-  },
-  computed: {
-    gutter () {
-      if (this.row) {
-        return this.row.gutter;
-      }
-      return 0;
-    }
-  },
+    return 0;
+  }
 
   render (h) {
-    const style = {};
-    const classList = [];
+    const style:Style = {};
+    const classList:string[] = [];
 
     if (this.gutter) {
       style.paddingLeft = `${this.gutter / 2}px`;
@@ -85,4 +84,4 @@ export default {
       this.$slots.default
     );
   }
-};
+}
