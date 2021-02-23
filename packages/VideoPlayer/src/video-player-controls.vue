@@ -30,8 +30,8 @@
 </template>
 
 <script>
-import secondToTime from 'src/utils/secondToTime.js';
-import LocaleMixin from 'src/mixins/locale.js';
+import secondToTime from 'src/utils/secondToTime';
+import LocaleMixin from 'src/mixins/locale';
 import PlayerProcess from './video-player-process.vue';
 import PlayerFullscreen from './video-player-fullscreen.vue';
 import PlayerSpeed from './video-player-speed.vue';

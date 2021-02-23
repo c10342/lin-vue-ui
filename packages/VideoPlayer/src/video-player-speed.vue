@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import LocaleMixin from 'src/mixins/locale.js';
+import LocaleMixin from 'src/mixins/locale';
 import { cloneDeep } from 'lodash';
 
 export default {

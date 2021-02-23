@@ -32,7 +32,7 @@
 import Hls from 'hls.js';
 import flvjs from 'flv.js/dist/flv.js';
 import { cloneDeep, isEqual } from 'lodash';
-import LocaleMixin from 'src/mixins/locale.js';
+import LocaleMixin from 'src/mixins/locale';
 import PlayerControls from './video-player-controls.vue';
 import PlayerAnimation from './video-player-animation.vue';
 import PlayerImage from './video-player-image.vue';

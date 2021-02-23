@@ -37,8 +37,8 @@
 </template>
 
 <script>
-import secondToTime from 'src/utils/secondToTime.js';
-import LocaleMixin from 'src/mixins/locale.js';
+import secondToTime from 'src/utils/secondToTime';
+import LocaleMixin from 'src/mixins/locale';
 
 export default {
   name: 'LinVideoPlayerProcess',

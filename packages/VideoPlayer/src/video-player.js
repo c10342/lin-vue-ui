@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import broadcast from 'src/utils/broadcast.js';
+import broadcast from 'src/utils/broadcast';
 import VideoPlayer from './video-player.vue';
 
 import {
@@ -173,7 +173,7 @@ class LinVideoPlayer {
   volume (percent) {
     const volume = this.instance?.setVolume(percent);
     if (volume > -1 && this.instance) {
-      broadcast.call(this.instance, {
+      broadcast(this.instance, {
         eventName: 'onvolumechange',
         params: volume,
         componentName: 'LinVideoPlayerVolume'
