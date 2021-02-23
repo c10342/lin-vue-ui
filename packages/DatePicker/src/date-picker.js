@@ -2,11 +2,11 @@ import './style.scss';
 
 import 'src/fonts/iconfont.css';
 
-import getDate from 'src/utils/getDate.js';
-import getYearMonthDay from 'src/utils/getYearMonthDay.js';
-import dispatch from 'src/utils/dispatch.js';
-import LocaleMixin from 'src/mixins/locale.js';
-import DateMixin from 'src/mixins/date.js';
+import getDate from 'src/utils/getDate';
+import getYearMonthDay from 'src/utils/getYearMonthDay';
+import dispatch from 'src/utils/dispatch';
+import LocaleMixin from 'src/mixins/locale';
+import DateMixin from 'src/mixins/date';
 
 export default {
   name: 'LinDatePicker',
@@ -361,7 +361,7 @@ export default {
         d = date;
       }
       this.$emit('input', d);
-      dispatch.call(this, {
+      dispatch(this, {
         eventName: 'validate',
         componentName: 'LinFormItem'
       });
