@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import LocaleMixin from 'src/mixins/locale.js';
+import LocaleMixin from 'src/mixins/locale';
 
 export default {
   name: 'LinPageHeader',
