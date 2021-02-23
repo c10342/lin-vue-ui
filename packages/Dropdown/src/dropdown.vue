@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import documentClick from 'src/mixins/documentClick.js';
+import documentClick from 'src/mixins/documentClick';
 
 export default {
   name: 'LinDropdown',
