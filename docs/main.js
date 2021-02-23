@@ -1,9 +1,9 @@
 
 import Vue from 'vue';
-import zhLang from 'src/locale/lang/zh-CN.js';
-import enLang from 'src/locale/lang/en-US.js';
+import zhLang from 'src/locale/lang/zh-CN.ts';
+import enLang from 'src/locale/lang/en-US.ts';
 import LinVueUi from 'lin-view-ui';
-import locale from 'src/locale/index.js';
+import locale from 'src/locale/index.ts';
 import App from './App.vue';
 import router from './router';
 import { getLang, langType } from './utils/lang';
