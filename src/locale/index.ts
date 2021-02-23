@@ -1,19 +1,19 @@
-import defaultLang from 'src/locale/lang/zh-CN.js';
+import defaultLang from 'src/locale/lang/zh-CN';
 import Vue from 'vue';
 import deepmerge from 'deepmerge';
-import Format from 'src/locale/format.js';
+import Format from 'src/locale/format';
 
-const format = Format(Vue);
+const format = Format();
 let lang = defaultLang;
 let merged = false;
 let i18nHandler = function i18nHandler (...reset) {
   const vuei18n = Object.getPrototypeOf(this || Vue).$t;
-  if (typeof vuei18n === 'function' && !!Vue.locale) {
+  if (typeof vuei18n === 'function' && !!(Vue as any).locale) {
     if (!merged) {
       merged = true;
-      Vue.locale(
-        Vue.config.lang,
-        deepmerge(lang, Vue.locale(Vue.config.lang) || {}, { clone: true })
+      (Vue as any).locale(
+        (Vue.config as any).lang,
+        deepmerge(lang, (Vue as any).locale((Vue.config as any).lang) || {}, { clone: true })
       );
     }
     return vuei18n.apply(this, [...reset]);

@@ -1,5 +1,6 @@
 function hasOwn (obj, key) {
-  return hasOwnProperty.call(obj, key);
+  return Object.prototype.hasOwnProperty.call(obj, key);
+  // return hasOwnProperty.call(obj, key);
 }
 
 const RE_NARGS = /(%|)\{([0-9a-zA-Z_]+)\}/g;
@@ -17,7 +18,7 @@ export default function format () {
    * @return {String}
    */
 
-  function template (string, ...args) {
+  function template (string, ...args:any) {
     if (args.length === 1 && typeof args[0] === 'object') {
       args = args[0];
     }
