@@ -15,6 +15,7 @@
     "baseUrl": "./",
     "declaration": true,
     "declarationDir": "types",
+    "noImplicitThis": false,
     "paths": {
       "packages/*": [
         "./packages/*"
