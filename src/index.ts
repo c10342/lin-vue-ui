@@ -1,4 +1,4 @@
-import locale from './locale/index.js';
+import locale from './locale/index';
 
 import 'src/fonts/iconfont.css';
 
