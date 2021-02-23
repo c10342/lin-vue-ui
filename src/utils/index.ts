@@ -1,5 +1,5 @@
 const exportObj = {};
-const testComps = require.context('./', false, /\.js$/);
+const testComps = require.context('./', false, /\ts$/);
 
 testComps.keys().forEach((key) => {
   const fileName = key.replace(/(.*\/)*([^.]+).*/gi, '$2');

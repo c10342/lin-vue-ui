@@ -2,10 +2,10 @@
  * 向上通知
  * @param {Object} options
  */
-function dispatch (options) {
+function dispatch (context, options) {
   const { eventName, params, componentName } = options;
 
-  let parent = this.$parent || this.$root;
+  let parent = context.$parent || context.$root;
   let name = parent.$options.name;
 
   while (parent) {

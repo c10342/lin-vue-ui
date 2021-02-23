@@ -2,7 +2,7 @@
  * 设为首页
  * @param {string} url 设置为首页的url
  */
-const setHome = (url) => {
+const setHome = (url:string) => {
   try {
     if (typeof url !== 'string') {
       throw new TypeError('url is not typeof string');

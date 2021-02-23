@@ -4,7 +4,7 @@
  * @param {number} month
  * @param {number} day
  */
-const getDate = (year, month, day) => {
+const getDate = (year:number, month:number, day:number) => {
   if (!year || !month || !day) {
     return new Date();
   }

@@ -3,7 +3,7 @@
  * @param {string} url
  * @param {string} fileName
  */
-const downloadFile = (url, fileName) => {
+const downloadFile = (url:string, fileName:string) => {
   if (typeof url !== 'string') {
     throw new TypeError('url is not typeof string');
   }

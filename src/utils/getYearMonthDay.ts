@@ -2,7 +2,7 @@
  * 根据日期对象返回年月日
  * @param {Date} date
  */
-const getYearMonthDay = (date) => {
+const getYearMonthDay = (date:Date) => {
   if (!date) {
     return '';
   }

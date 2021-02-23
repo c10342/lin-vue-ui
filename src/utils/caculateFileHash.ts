@@ -21,7 +21,7 @@ const caculateFileHash = (file) => new Promise((resolve, reject) => {
   }
 
   fileReader.onload = function onload (e) {
-    spark.append(e.target.result);
+    spark.append(e.target?.result);
     currentChunk++;
 
     if (currentChunk < chunks) {

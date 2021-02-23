@@ -3,7 +3,7 @@
  * @param {Number} second
  * @returns {String}
  */
-const secondToTime = (second) => {
+const secondToTime = (second:number) => {
   second = second || 0;
   if (second === 0 || second === Infinity || second.toString() === 'NaN') {
     return '00:00';

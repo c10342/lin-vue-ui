@@ -3,7 +3,7 @@
  * @param {string} title 收藏的标题
  * @param {string} url 收藏的网址
  */
-const addFavorite = (title, url) => {
+const addFavorite = (title:string, url:string) => {
   try {
     if (typeof title !== 'string') {
       throw TypeError('title is not typeof string');

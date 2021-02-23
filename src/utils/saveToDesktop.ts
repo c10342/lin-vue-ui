@@ -3,7 +3,7 @@
  * @param {string} sName 保存到桌面的名称
  * @param {string} sUrl 保存的网址
  */
-const saveToDesktop = (sName, sUrl) => {
+const saveToDesktop = (sName:string, sUrl:string) => {
   try {
     if (typeof sName !== 'string') {
       throw new TypeError('sName is not typeof string');

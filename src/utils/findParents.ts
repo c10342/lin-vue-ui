@@ -1,5 +1,5 @@
 export default function findParents (context, componentName) {
-  const parents = [];
+  const parents:any[] = [];
   const parent = context.$parent;
 
   if (parent) {
