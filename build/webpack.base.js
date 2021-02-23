@@ -9,6 +9,9 @@ const baseConfig = {
     chunks: false,
     chunkModules: false
   },
+  performance: {
+    hints:false   
+  },
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".jsx", "md", ".vue", ".json"],
     alias: {
