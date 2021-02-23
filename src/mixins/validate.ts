@@ -1,4 +1,4 @@
-import dispatch from 'src/utils/dispatch.js';
+import dispatch from 'src/utils/dispatch';
 
 import { Vue, Component } from 'vue-property-decorator';
 
