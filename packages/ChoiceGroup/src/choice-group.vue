@@ -157,7 +157,7 @@ export default class LinChoiceGroup extends Vue {
   @Prop({ type: Boolean, default: false })
   filterable!: boolean;
 
-  @Prop({ type: Function, default: '' })
+  @Prop({ type: Function, default: null })
   filterMethod!: (data: any, props:any) => boolean;
 
   @ProvideReactive()
