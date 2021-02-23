@@ -34,8 +34,8 @@
   </transition>
 </template>
 <script>
-import LocaleMixin from 'src/mixins/locale.js';
-import DragMixin from 'src/mixins/drag.js';
+import LocaleMixin from 'src/mixins/locale';
+import DragMixin from 'src/mixins/drag';
 
 export default {
   name: 'LinDialog',
