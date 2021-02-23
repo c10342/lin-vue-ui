@@ -45,20 +45,24 @@ export default class LinCheckbox extends Vue {
   @Prop({ type: Boolean, default: false })
   disabled!: boolean;
 
-  @InjectReactive({ default: '' })
-  CheckboxGroup!: CheckboxGroupItem;
+  @InjectReactive('CheckboxGroup')
+  CheckboxGroup!: CheckboxGroupItem ;
+
+  mounted () {
+    console.log('mounted', this.CheckboxGroup);
+  }
 
   get isGroup () {
     return !!this.CheckboxGroup;
   }
 
   get model () {
-    return this.isGroup ? this.CheckboxGroup.value : this.value;
+    return this.CheckboxGroup ? this.CheckboxGroup.value : this.value;
   }
 
   set model (value) {
     if (this.isGroup) {
-      this.CheckboxGroup.$emit('input', value);
+      this.CheckboxGroup?.$emit('input', value);
     } else {
       this.$emit('input', value);
     }
@@ -76,7 +80,7 @@ export default class LinCheckbox extends Vue {
 
   get isDisabled () {
     if (this.isGroup) {
-      if (this.CheckboxGroup.disabled) {
+      if (this.CheckboxGroup?.disabled) {
         return true;
       }
     }
