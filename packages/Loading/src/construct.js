@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import getScroll from 'src/utils/getScroll.js';
+import getScroll from 'src/utils/getScroll';
 import Loading from './loading.vue';
 
 function handleOnScroll (target, targetDom, scrollDom) {
