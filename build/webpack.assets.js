@@ -8,6 +8,8 @@ const resolve = (dir) => path.resolve(__dirname, "../src", dir);
 
 const baseConfig = require("./webpack.base");
 
+const util = require('./util')
+
 const getAssetsEntries = (pathStr) => {
   let files = fs.readdirSync(resolve(pathStr));
   const assetsEntries = files.reduce((ret, item) => {
@@ -37,15 +39,21 @@ const entry = {
   ...getAssetsEntries("mixins"),
   ...getAssetsEntries("utils"),
 };
+
 const assetsConfig = {
   mode: "production",
   entry: entry,
   output: {
     path: path.resolve(__dirname, "../lib"),
     filename: `assets/[name]`,
-    libraryTarget: "commonjs2",
-    libraryExport: "default",
+    libraryTarget: "umd",
+    libraryExport: "commonjs2",
+    // libraryTarget: "commonjs2",
+    // libraryExport: "default",
     library: "[name]",
+  },
+  externals: {
+    ...util.getExternalsList(),
   },
 };
 
