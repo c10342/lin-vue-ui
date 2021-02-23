@@ -1,14 +1,15 @@
 import dispatch from 'src/utils/dispatch.js';
 
-const validate = {
+import { Vue, Component } from 'vue-property-decorator';
+
+@Component
+export default class ValidateMixin extends Vue {
   created () {
     this.$on('input', () => {
-      dispatch.call(this, {
+      dispatch(this, {
         eventName: 'validate',
         componentName: 'LinFormItem'
       });
     });
   }
-};
-
-export default validate;
+}
