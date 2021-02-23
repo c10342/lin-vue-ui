@@ -84,9 +84,9 @@
 </template>
 
 <script>
-import LocaleMixin from 'src/mixins/locale.js';
-import documentClick from 'src/mixins/documentClick.js';
-import findChildren from 'src/utils/findChildren.js';
+import LocaleMixin from 'src/mixins/locale';
+import documentClick from 'src/mixins/documentClick';
+import findChildren from 'src/utils/findChildren';
 import Input from 'packages/Input/index.js';
 
 export default {
