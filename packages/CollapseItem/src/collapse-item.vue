@@ -21,7 +21,7 @@
 
 <script>
 import { cloneDeep } from 'lodash';
-import collapseTransition from 'src/js/collapseTransition.js';
+import collapseTransition from 'src/js/collapseTransition';
 
 export default {
   name: 'LinCollapseItem',
