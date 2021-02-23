@@ -65,7 +65,7 @@
 </template>
 
 <script>
-import LocaleMixin from 'src/mixins/locale.js';
+import LocaleMixin from 'src/mixins/locale';
 import Image from 'packages/Image/index.js';
 import defaultAvator from 'src/images/default_avatar.png';
 
