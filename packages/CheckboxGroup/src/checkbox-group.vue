@@ -11,7 +11,7 @@ import { Vue, Component, Prop } from 'vue-property-decorator';
   name: 'LinCheckboxGroup',
   provide () {
     return {
-      CheckboxGroup: this
+      CheckboxGroupInstance: this
     };
   }
 })
