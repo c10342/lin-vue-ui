@@ -25,66 +25,69 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, InjectReactive, Prop } from 'vue-property-decorator';
 import dispatch from 'src/utils/dispatch';
-import { CheckboxGroupItem } from './type';
 
-@Component({
-  name: 'LinCheckbox'
-})
-export default class LinCheckbox extends Vue {
-  @Prop({ type: Boolean, default: false })
-  value!: boolean;
-
-  @Prop({ type: String, default: '' })
-  name!: string;
-
-  @Prop({ type: String, default: '' })
-  label!: string;
-
-  @Prop({ type: Boolean, default: false })
-  disabled!: boolean;
-
-  @InjectReactive('CheckboxGroup')
-  CheckboxGroup!: CheckboxGroupItem ;
-
-  mounted () {
-    console.log('mounted', this.CheckboxGroup);
-  }
-
-  get isGroup () {
-    return !!this.CheckboxGroup;
-  }
-
-  get model () {
-    return this.CheckboxGroup ? this.CheckboxGroup.value : this.value;
-  }
-
-  set model (value) {
-    if (this.isGroup) {
-      this.CheckboxGroup?.$emit('input', value);
-    } else {
-      this.$emit('input', value);
+export default {
+  name: 'LinCheckbox',
+  inject: {
+    CheckboxGroup: {
+      default: ''
     }
-    dispatch(this, {
-      eventName: 'validate',
-      componentName: 'LinFormItem'
-    });
-  }
-
-  get isChecked () {
-    // 如果是group包裹，判断 label是否在model中
-    // 如果没有group包裹，直接使用model
-    return this.isGroup ? (this.model as any[]).includes(this.label) : this.model;
-  }
-
-  get isDisabled () {
-    if (this.isGroup) {
-      if (this.CheckboxGroup?.disabled) {
-        return true;
+  },
+  computed: {
+    isGroup () {
+      return !!this.CheckboxGroup;
+    },
+    model: {
+      get () {
+        return this.isGroup ? this.CheckboxGroup.value : this.value;
+      },
+      set (value) {
+        // this.isGroup
+        //   ? this.CheckboxGroup.$emit('input', value)
+        //   : this.$emit('input', value);
+        if (this.isGroup) {
+          this.CheckboxGroup.$emit('input', value);
+        } else {
+          this.$emit('input', value);
+        }
+        dispatch(this, {
+          eventName: 'validate',
+          componentName: 'LinFormItem'
+        });
       }
+    },
+    isChecked () {
+      // 如果是group包裹，判断 label是否在model中
+      // 如果没有group包裹，直接使用model
+      return this.isGroup ? this.model.includes(this.label) : this.model;
+    },
+    isDisabled () {
+      if (this.isGroup) {
+        if (this.CheckboxGroup.disabled) {
+          return true;
+        }
+      }
+      return this.disabled;
     }
-    return this.disabled;
+  },
+  props: {
+    value: {
+      type: Boolean,
+      default: false
+    },
+    name: {
+      type: String,
+      default: ''
+    },
+    label: {
+      type: String,
+      default: ''
+    },
+    disabled: {
+      type: Boolean,
+      default: false
+    }
   }
-}
+};
 </script>
