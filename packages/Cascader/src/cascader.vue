@@ -47,7 +47,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, ProvideReactive, Mixins } from 'vue-property-decorator';
+import { Component, Prop, Mixins } from 'vue-property-decorator';
 import { OptionsItem, ShowFormat, LazyLoad, OptionsListItem } from './type';
 import Input from 'packages/Input/index.js';
 import DocumentClickMixin from 'src/mixins/documentClick';
@@ -59,6 +59,11 @@ import Panel from './panel.vue';
   components: {
     [Input.name]: Input,
     [Panel.name]: Panel
+  },
+  provide () {
+    return {
+      cascader: this
+    };
   }
 })
 export default class LinCascader extends Mixins(DocumentClickMixin, LocaleMixin) {
@@ -103,9 +108,6 @@ export default class LinCascader extends Mixins(DocumentClickMixin, LocaleMixin)
 
   @Prop({ type: String })
   emptyTip!: string;
-
-  @ProvideReactive()
-  cascader = this;
 
   myValueArr:any = [];
 
