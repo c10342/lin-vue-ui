@@ -19,93 +19,88 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { Vue, Component, Prop } from 'vue-property-decorator';
 import { cloneDeep } from 'lodash';
 import collapseTransition from 'src/js/collapseTransition';
 
-export default {
+@Component({
   name: 'LinCollapseItem',
-  props: {
-    name: {
-      type: String,
-      require: true
-    },
-    hideArrow: {
-      type: Boolean,
-      default: false
-    }
-  },
   components: {
     collapseTransition
   },
   inject: {
-    collapseGroup: {
+    CollapseGroupInstance: {
       default: ''
     }
-  },
-  data () {
-    return {
-      index: 0
-    };
-  },
-  computed: {
-    simple () {
-      if (this.collapseGroup) {
-        return this.collapseGroup.simple;
+  }
+})
+export default class LinCollapseItem extends Vue {
+  @Prop({ type: String, required: true })
+  name!: string;
+
+  @Prop({ type: Boolean, default: false })
+  hideArrow!: boolean;
+
+  index = 0;
+
+  get simple () {
+    if (this.CollapseGroupInstance) {
+      return this.CollapseGroupInstance.simple;
+    }
+    return false;
+  }
+
+  get collapseValue () {
+    if (this.CollapseGroupInstance) {
+      const val = this.CollapseGroupInstance.collapseValue;
+      if (val && typeof val === 'string') {
+        return [val];
       }
-      return false;
-    },
-    collapseValue () {
-      if (this.collapseGroup) {
-        const val = this.collapseGroup.collapseValue;
-        if (val && typeof val === 'string') {
-          return [val];
-        }
-        if (Array.isArray(val)) {
-          return val;
-        }
-      }
-      return [];
-    },
-    accordion () {
-      if (this.collapseGroup) {
-        return this.collapseGroup.accordion;
-      }
-      return false;
-    },
-    show: {
-      get () {
-        if (this.collapseValue.includes(this.name)) {
-          return true;
-        }
-        return false;
-      },
-      set (val) {
-        if (this.collapseGroup) {
-          let data = cloneDeep(this.collapseValue);
-          if (this.accordion) {
-            if (val === false) {
-              data = [];
-            } else {
-              data = [this.name];
-            }
-          } else if (val === false) {
-            const index = data.findIndex((item) => item === this.name);
-            if (index > -1) {
-              data.splice(index, 1);
-            }
-          } else {
-            data.push(this.name);
-          }
-          this.collapseGroup.collapseValue = data;
-        }
+      if (Array.isArray(val)) {
+        return val;
       }
     }
-  },
-  methods: {
-    onHeaderClick () {
-      this.show = !this.show;
+    return [];
+  }
+
+  get accordion () {
+    if (this.CollapseGroupInstance) {
+      return this.CollapseGroupInstance.accordion;
+    }
+    return false;
+  }
+
+  get show () {
+    if (this.collapseValue.includes(this.name)) {
+      return true;
+    }
+    return false;
+  }
+
+  set show (val) {
+    if (this.CollapseGroupInstance) {
+      let data = cloneDeep(this.collapseValue);
+      if (this.accordion) {
+        if (val === false) {
+          data = [];
+        } else {
+          data = [this.name];
+        }
+      } else if (val === false) {
+        const index = data.findIndex((item) => item === this.name);
+        if (index > -1) {
+          data.splice(index, 1);
+        }
+      } else {
+        data.push(this.name);
+      }
+      this.CollapseGroupInstance.collapseValue = data;
     }
   }
-};
+
+  onHeaderClick () {
+    this.show = !this.show;
+  }
+}
 </script>
