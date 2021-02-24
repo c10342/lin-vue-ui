@@ -5,10 +5,15 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop, ProvideReactive } from 'vue-property-decorator';
+import { Vue, Component, Prop } from 'vue-property-decorator';
 
 @Component({
-  name: 'LinCheckboxGroup'
+  name: 'LinCheckboxGroup',
+  provide () {
+    return {
+      CheckboxGroup: this
+    };
+  }
 })
 export default class LinCheckboxGroup extends Vue {
   @Prop({ type: Array })
@@ -16,8 +21,5 @@ export default class LinCheckboxGroup extends Vue {
 
   @Prop({ type: Boolean, default: false })
   disabled!:boolean
-
-  @ProvideReactive()
-  CheckboxGroup = this
 }
 </script>
