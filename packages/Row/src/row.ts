@@ -1,8 +1,13 @@
 import './style.scss';
-import { Vue, Component, Prop, ProvideReactive } from 'vue-property-decorator';
+import { Vue, Component, Prop } from 'vue-property-decorator';
 
 @Component({
-  name: 'LinRow'
+  name: 'LinRow',
+  provide () {
+    return {
+      row: this
+    };
+  }
 })
 export default class LinRow extends Vue {
   @Prop({ type: String, default: 'div' })
@@ -19,9 +24,6 @@ export default class LinRow extends Vue {
 
   @Prop({ type: String, default: '' })
   align!: string
-
-  @ProvideReactive()
-  row = this
 
   render (h) {
     const classList:string[] = [];
