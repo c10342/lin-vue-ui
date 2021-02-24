@@ -1,15 +1,18 @@
 <template>
   <div>
-    <div class="lin-dropdown-group-label" v-if="label">{{label}}</div>
+    <div class="lin-dropdown-group-label" v-if="label">{{ label }}</div>
     <slot></slot>
   </div>
 </template>
 
-<script>
-export default {
-  name: 'LinDropdownGroup',
-  props: {
-    label: String
-  }
-};
+<script lang="ts">
+import { Vue, Component, Prop } from 'vue-property-decorator';
+
+@Component({
+  name: 'LinDropdownGroup'
+})
+export default class LinDropdownGroup extends Vue {
+  @Prop({ type: String })
+  label!: string;
+}
 </script>
