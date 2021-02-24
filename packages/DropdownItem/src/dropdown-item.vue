@@ -2,19 +2,19 @@
   <div
     @click="onItemClick"
     :class="[
-    {'lin-dropdown-item-divided':divided},
-    {'lin-dropdown-item-disabled':disabled},
-    'lin-dropdown-item'
+      { 'lin-dropdown-item-divided': divided },
+      { 'lin-dropdown-item-disabled': disabled },
+      'lin-dropdown-item',
     ]"
   >
-    <span :class="[icon,'lin-dropdown-item-icon']" v-if="icon"></span>
+    <span :class="[icon, 'lin-dropdown-item-icon']" v-if="icon"></span>
     <div>
       <slot></slot>
     </div>
   </div>
 </template>
 
-<script>
+<script lang="ts">
 export default {
   name: 'LinDropdownItem',
   props: {
@@ -26,7 +26,7 @@ export default {
       type: Boolean,
       default: false
     },
-    command: null,
+    command: { type: [String, Number, Object] },
     icon: {
       type: String,
       default: ''
