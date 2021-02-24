@@ -15,42 +15,40 @@
 </template>
 
 <script lang="ts">
-export default {
+import { Vue, Component, Prop } from 'vue-property-decorator';
+
+@Component({
   name: 'LinDropdownItem',
-  props: {
-    disabled: {
-      type: Boolean,
-      default: false
-    },
-    divided: {
-      type: Boolean,
-      default: false
-    },
-    command: { type: [String, Number, Object] },
-    icon: {
-      type: String,
-      default: ''
-    }
-  },
-  computed: {
-    hideOnClick () {
-      return this.dropdown ? this.dropdown.hideOnClick : true;
-    }
-  },
   inject: {
-    dropdown: {
+    DropdownInstance: {
       default: null
     }
-  },
-  methods: {
-    onItemClick () {
-      if (this.dropdown) {
-        if (this.hideOnClick) {
-          this.dropdown.hideList();
-        }
-        this.dropdown.$emit('command', this.command);
+  }
+})
+export default class LinDropdownItem extends Vue {
+  @Prop({ type: Boolean, default: false })
+  disabled!: boolean;
+
+  @Prop({ type: Boolean, default: false })
+  divided!: boolean;
+
+  @Prop({ type: [String, Number, Object] })
+  command!: any;
+
+  @Prop({ type: String, default: '' })
+  icon!: string;
+
+  get hideOnClick () {
+    return this.DropdownInstance ? this.DropdownInstance.hideOnClick : true;
+  }
+
+  onItemClick () {
+    if (this.DropdownInstance) {
+      if (this.hideOnClick) {
+        this.DropdownInstance.hideList();
       }
+      this.DropdownInstance.$emit('command', this.command);
     }
   }
-};
+}
 </script>
