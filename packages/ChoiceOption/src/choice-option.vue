@@ -13,12 +13,16 @@
 import {
   Vue,
   Component,
-  Prop,
-  ProvideReactive
+  Prop
 } from 'vue-property-decorator';
 
 @Component({
-  name: 'LinChoiceOption'
+  name: 'LinChoiceOption',
+  provide () {
+    return {
+      option: this
+    };
+  }
 })
 export default class LinChoiceOption extends Vue {
   @Prop({ type: String, default: '' })
@@ -26,8 +30,5 @@ export default class LinChoiceOption extends Vue {
 
   @Prop({ type: Boolean, default: false })
   disabled!:boolean
-
-  @ProvideReactive()
-  option = this
 }
 </script>
