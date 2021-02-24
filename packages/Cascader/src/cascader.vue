@@ -62,7 +62,7 @@ import Panel from './panel.vue';
   },
   provide () {
     return {
-      cascader: this
+      cascaderInstance: this
     };
   }
 })

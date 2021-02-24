@@ -1,3 +1,5 @@
+import Cascader from './cascader';
+
 interface item{
     value:string,
     label:string,
@@ -24,16 +26,8 @@ export interface OptionsItem{
     children?:Array<item>
 }
 
-export interface Cascader{
-    valueKey:string
-    label:string
-    disabled:string
-    leaf:string
-    children:string
-    valueArr:[]
-    lazy:boolean
-    lazyLoad:LazyLoad
-    hidePuop:()=>void
-    setValue:(data:any, level:number)=>void
-    [key:string]:any
-}
+declare module 'vue/types/vue' {
+    interface Vue {
+      cascaderInstance: Cascader;
+    }
+  }

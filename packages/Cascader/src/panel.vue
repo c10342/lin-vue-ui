@@ -28,69 +28,80 @@
 </template>
 
 <script lang="ts">
-export default {
+import { Vue, Component, Prop } from 'vue-property-decorator';
+import { OptionsItem } from './type';
+
+@Component({
   name: 'LinPanel',
-  props: {
-    options: {
-      type: Array,
-      default: () => []
-    },
-    level: {
-      type: Number,
-      default: 0
+  inject: ['cascaderInstance']
+})
+export default class LinPanel extends Vue {
+  @Prop({ type: Array, default: () => [] })
+  options!: OptionsItem[];
+
+  @Prop({ type: Number, default: 0 })
+  level!: number;
+
+  currentList = [];
+  current = {};
+  loading = false;
+
+  get valueKey () {
+    if (this.cascaderInstance) {
+      return this.cascaderInstance.valueKey;
     }
-  },
-  inject: ['cascader'],
-  computed: {
-    valueKey () {
-      if (this.cascader) {
-        return this.cascader.valueKey;
-      }
-      return 'id';
-    },
-    label () {
-      if (this.cascader) {
-        return this.cascader.label;
-      }
-      return 'label';
-    },
-    disabled () {
-      if (this.cascader) {
-        return this.cascader.disabled;
-      }
-      return 'disabled';
-    },
-    leaf () {
-      if (this.cascader) {
-        return this.cascader.leaf;
-      }
-      return 'leaf';
-    },
-    children () {
-      if (this.cascader) {
-        return this.cascader.children;
-      }
-      return 'children';
-    },
-    valueArr () {
-      if (this.cascader) {
-        return this.cascader.valueArr;
-      }
-      return [];
-    },
-    lazy () {
-      if (this.cascader) {
-        return this.cascader.lazy;
-      }
-      return false;
-    },
-    lazyLoad () {
-      if (this.cascader) {
-        return this.cascader.lazyLoad;
-      }
-      return null;
+    return 'id';
+  }
+
+  get label () {
+    if (this.cascaderInstance) {
+      return this.cascaderInstance.label;
     }
-  },
+    return 'label';
+  }
+
+  get disabled () {
+    if (this.cascaderInstance) {
+      return this.cascaderInstance.disabled;
+    }
+    return 'disabled';
+  }
+
+  get leaf () {
+    if (this.cascaderInstance) {
+      return this.cascaderInstance.leaf;
+    }
+    return 'leaf';
+  }
+
+  get children () {
+    if (this.cascaderInstance) {
+      return this.cascaderInstance.children;
+    }
+    return 'children';
+  }
+
+  get valueArr () {
+    if (this.cascaderInstance) {
+      return this.cascaderInstance.valueArr;
+    }
+    return [];
+  }
+
+  get lazy () {
+    if (this.cascaderInstance) {
+      return this.cascaderInstance.lazy;
+    }
+    return false;
+  }
+
+  get lazyLoad () {
+    if (this.cascaderInstance) {
+      return this.cascaderInstance.lazyLoad;
+    }
+    return null;
+  }
+
   created () {
     this.$on('displayPuop', (data) => {
       if (data && data[this.level]) {
@@ -121,66 +132,62 @@ export default {
         this.current = {};
       }
     });
-  },
-  data () {
-    return {
-      currentList: [],
-      current: {},
-      loading: false
-    };
-  },
-  methods: {
-    async onItemClick (data) {
-      if (data[this.disabled]) {
-        return;
-      }
-      const { valueKey } = this;
-      if (data[valueKey] === this.current[valueKey]) {
-        return;
-      }
-      this.current = data;
-      if (this.lazy && this.lazyLoad && !data[this.leaf]) {
-        if (!data[this.children]) {
-          this.loading = true;
-          const result = await this.lazyLoad({ level: this.level + 1, data });
-          const index = this.options.findIndex(
-            (item) => item[valueKey] === data[valueKey]
-          );
-          // eslint-disable-next-line
-          this.options[index][this.children] = result;
-          this.loading = false;
-        }
-      }
-      this.handleBehaver(data);
-    },
-    handleBehaver (data) {
-      this.clearList(this.$children);
-      this.currentList = [];
-      if (data[this.children] && data[this.children].length !== 0) {
-        this.currentList = data[this.children];
-      } else {
-        this.cascader?.hidePuop();
-      }
-      this.cascader?.setValue(data, this.level);
-    },
-    clearList (children) {
-      children.forEach((child) => {
-        child.currentList = [];
-        if (child.$children.length !== 0) {
-          this.clearList(child.$children);
-        }
-      });
-    },
-    showIconRight (data) {
-      if (this.lazy && this.lazyLoad) {
-        return !data[this.leaf];
-      }
-      return data[this.children] && data[this.children].length !== 0;
-    },
-    showLoading (data) {
-      const { valueKey } = this;
-      return data[valueKey] === this.current[valueKey] && this.loading;
-    }
   }
-};
+
+  async onItemClick (data) {
+    if (data[this.disabled]) {
+      return;
+    }
+    const { valueKey } = this;
+    if (data[valueKey] === this.current[valueKey]) {
+      return;
+    }
+    this.current = data;
+    if (this.lazy && this.lazyLoad && !data[this.leaf]) {
+      if (!data[this.children]) {
+        this.loading = true;
+        const result = await this.lazyLoad({ level: this.level + 1, data });
+        const index = this.options.findIndex(
+          (item) => item[valueKey] === data[valueKey]
+        );
+        // eslint-disable-next-line
+        this.options[index][this.children] = result;
+        this.loading = false;
+      }
+    }
+    this.handleBehaver(data);
+  }
+
+  handleBehaver (data) {
+    this.clearList(this.$children);
+    this.currentList = [];
+    if (data[this.children] && data[this.children].length !== 0) {
+      this.currentList = data[this.children];
+    } else {
+      this.cascaderInstance?.hidePuop();
+    }
+    this.cascaderInstance?.setValue(data, this.level);
+  }
+
+  clearList (children) {
+    children.forEach((child) => {
+      child.currentList = [];
+      if (child.$children.length !== 0) {
+        this.clearList(child.$children);
+      }
+    });
+  }
+
+  showIconRight (data) {
+    if (this.lazy && this.lazyLoad) {
+      return !data[this.leaf];
+    }
+    return data[this.children] && data[this.children].length !== 0;
+  }
+
+  showLoading (data) {
+    const { valueKey } = this;
+    return data[valueKey] === this.current[valueKey] && this.loading;
+  }
+}
 </script>
