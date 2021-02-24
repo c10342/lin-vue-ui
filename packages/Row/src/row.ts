@@ -5,7 +5,7 @@ import { Vue, Component, Prop } from 'vue-property-decorator';
   name: 'LinRow',
   provide () {
     return {
-      row: this
+      RowInstance: this
     };
   }
 })
