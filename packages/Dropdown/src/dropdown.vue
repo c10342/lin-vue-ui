@@ -26,106 +26,115 @@
   </div>
 </template>
 
-<script>
-import documentClick from 'src/mixins/documentClick';
+<script lang="ts">
+import { Component, Mixins, Prop } from 'vue-property-decorator';
+import DocumentClickMixin from 'src/mixins/documentClick';
 
-export default {
+@Component({
   name: 'LinDropdown',
-  mixins: [documentClick],
-  props: {
-    trigger: {
-      type: String,
-      default: 'hover'
-    },
-    hideOnClick: {
-      type: Boolean,
-      default: true
-    }
-  },
-  data () {
-    return {
-      isShow: false,
-      top: 0,
-      isDown: true
-    };
-  },
-  mounted () {
-    this.setPlacement();
-  },
   provide () {
     return {
       dropdown: this
     };
-  },
-  methods: {
-    onMouseEnter () {
-      if (this.trigger === 'hover') {
-        this.showList();
-      }
-    },
-    onMouseLeave () {
-      if (this.trigger === 'hover') {
-        this.hideList();
-      }
-    },
-    onLabelClick () {
-      if (this.trigger === 'click') {
-        this.toggleList();
-      }
-    },
-    showList () {
-      if (!this.isShow) {
-        this.isShow = true;
-        this.setPlacement();
-        this.$emit('visible-change', true);
-      }
-    },
+  }
+})
+export default class LinDropdown extends Mixins(DocumentClickMixin) {
+  @Prop({ type: String, default: 'hover' })
+  trigger!: string;
 
-    setDownTop () {
-      this.isDown = true;
-      const { dropdownLabel } = this.$refs;
-      this.top = `${dropdownLabel.clientHeight + 8}px`;
-    },
-    setUpTop () {
-      this.isDown = false;
-      const { dropdownContainer } = this.$refs;
-      this.top = `${-(dropdownContainer.clientHeight + 10)}px`;
-    },
-    setPlacement () {
-      this.$nextTick(() => {
-        const { dropdownContainer } = this.$refs;
-        const { notOutsideContainer } = this.$refs;
-        const bottom = window.innerHeight -
-          notOutsideContainer.getBoundingClientRect().bottom;
-        const { top } = notOutsideContainer.getBoundingClientRect();
-        if (bottom > dropdownContainer.clientHeight) {
-          this.setDownTop();
-        } else if (top > dropdownContainer.clientHeight) {
-          this.setUpTop();
-        } else {
-          this.setDownTop();
-        }
-      });
-    },
-    hideList () {
-      if (this.isShow) {
-        this.isShow = false;
-        this.$emit('visible-change', false);
-      }
-    },
-    toggleList () {
-      if (this.isShow) {
-        this.hideList();
-      } else {
-        this.showList();
-      }
-    },
-    onDocumentClick (event) {
-      const { notOutsideContainer } = this.$refs;
-      if (!notOutsideContainer.contains(event.target)) {
-        this.hideList();
-      }
+  @Prop({ type: Boolean, default: true })
+  hideOnClick!: boolean;
+
+  isShow = false;
+
+  top = '0';
+
+  isDown = true;
+
+  mounted () {
+    this.setPlacement();
+  }
+
+  onMouseEnter () {
+    if (this.trigger === 'hover') {
+      this.showList();
     }
   }
-};
+
+  onMouseLeave () {
+    if (this.trigger === 'hover') {
+      this.hideList();
+    }
+  }
+
+  onLabelClick () {
+    if (this.trigger === 'click') {
+      this.toggleList();
+    }
+  }
+
+  showList () {
+    if (!this.isShow) {
+      this.isShow = true;
+      this.setPlacement();
+      this.$emit('visible-change', true);
+    }
+  }
+
+  setDownTop () {
+    this.isDown = true;
+    // const { dropdownLabel } = this.$refs;
+    const dropdownLabel = this.$refs.dropdownLabel as HTMLElement;
+    this.top = `${dropdownLabel.clientHeight + 8}px`;
+  }
+
+  setUpTop () {
+    this.isDown = false;
+    // const { dropdownContainer } = this.$refs;
+    const dropdownContainer = this.$refs.dropdownContainer as HTMLElement;
+    this.top = `${-(dropdownContainer.clientHeight + 10)}px`;
+  }
+
+  setPlacement () {
+    this.$nextTick(() => {
+      // const { dropdownContainer } = this.$refs;
+      // const { notOutsideContainer } = this.$refs;
+      const dropdownContainer = this.$refs.dropdownContainer as HTMLElement;
+      const notOutsideContainer = this.$refs.notOutsideContainer as HTMLElement;
+      const bottom =
+        window.innerHeight - notOutsideContainer.getBoundingClientRect().bottom;
+      const { top } = notOutsideContainer.getBoundingClientRect();
+      if (bottom > dropdownContainer.clientHeight) {
+        this.setDownTop();
+      } else if (top > dropdownContainer.clientHeight) {
+        this.setUpTop();
+      } else {
+        this.setDownTop();
+      }
+    });
+  }
+
+  hideList () {
+    if (this.isShow) {
+      this.isShow = false;
+      this.$emit('visible-change', false);
+    }
+  }
+
+  toggleList () {
+    if (this.isShow) {
+      this.hideList();
+    } else {
+      this.showList();
+    }
+  }
+
+  onDocumentClick (event) {
+    // const { notOutsideContainer } = this.$refs;
+    const notOutsideContainer = this.$refs.notOutsideContainer as HTMLElement;
+    if (!notOutsideContainer.contains(event.target)) {
+      this.hideList();
+    }
+  }
+}
 </script>
