@@ -34,7 +34,7 @@ import DocumentClickMixin from 'src/mixins/documentClick';
   name: 'LinDropdown',
   provide () {
     return {
-      dropdown: this
+      DropdownInstance: this
     };
   }
 })
