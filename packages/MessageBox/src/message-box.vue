@@ -76,102 +76,134 @@
   </transition>
 </template>
 
-<script>
-import Button from 'packages/Button/index.ts';
-import Input from 'packages/Input/index.js';
+<script lang="ts">
+import { Mixins, Prop, Component } from 'vue-property-decorator';
+import Button from 'packages/Button/index';
+import Input from 'packages/Input/index';
 import LocaleMixin from 'src/mixins/locale';
 import DragMixin from 'src/mixins/drag';
+import { BeforeClose } from './type';
 
-export default {
+@Component({
   name: 'LinMessageBox',
-  mixins: [LocaleMixin, DragMixin],
   components: {
     [Button.name]: Button,
     [Input.name]: Input
-  },
-  props: {
-    title: String,
-    message: String,
-    dangerouslyUseHTMLString: Boolean,
-    type: String,
-    iconClass: String,
-    customClass: String,
-    showClose: {
-      type: Boolean,
-      default: true
-    },
-    beforeClose: Function,
-    showCancelButton: Boolean,
-    showConfirmButton: { type: Boolean, default: true },
-    cancelButtonText: String,
-    confirmButtonText: String,
-    cancelButtonClass: String,
-    confirmButtonClass: String,
-    closeOnClickModal: {
-      type: Boolean,
-      default: true
-    },
-    closeOnPressEscape: {
-      type: Boolean,
-      default: true
-    },
-    closeOnHashChange: {
-      type: Boolean,
-      default: true
-    },
-    showInput: {
-      typs: Boolean,
-      default: false
-    },
-    inputPlaceholder: String,
-    inputType: {
-      type: String,
-      default: 'text'
-    },
-    inputValue: String,
-    inputPattern: RegExp,
-    inputValidator: Function,
-    inputErrorMessage: String,
-    roundButton: Boolean,
-    confirmButtonLoading: Boolean,
-    loadingSize: {
-      type: String,
-      default: '11px'
+  }
+})
+export default class LinMessageBox extends Mixins(LocaleMixin, DragMixin) {
+  @Prop({ type: String })
+  title!: string;
+
+  @Prop({ type: String })
+  message!: string;
+
+  @Prop({ type: String })
+  dangerouslyUseHTMLString!: string;
+
+  @Prop({ type: String })
+  type!: string;
+
+  @Prop({ type: String })
+  iconClass!: string;
+
+  @Prop({ type: String })
+  customClass!: string;
+
+  @Prop({ type: Boolean, default: true })
+  showClose!: boolean;
+
+  @Prop({ type: Function })
+  beforeClose!: BeforeClose;
+
+  @Prop({ type: Boolean })
+  showCancelButton!: boolean;
+
+  @Prop({ type: Boolean, default: true })
+  showConfirmButton!: boolean;
+
+  @Prop({ type: String })
+  cancelButtonText!: string;
+
+  @Prop({ type: String })
+  confirmButtonText!: string;
+
+  @Prop({ type: String })
+  cancelButtonClass!: string;
+
+  @Prop({ type: String })
+  confirmButtonClass!: string;
+
+  @Prop({ type: Boolean, default: true })
+  closeOnClickModal!: boolean;
+
+  @Prop({ type: Boolean, default: true })
+  closeOnPressEscape!: boolean;
+
+  @Prop({ type: Boolean, default: true })
+  closeOnHashChange!: boolean;
+
+  @Prop({ type: Boolean, default: false })
+  showInput!: boolean;
+
+  @Prop({ type: String })
+  inputPlaceholder!: string;
+
+  @Prop({ type: String, default: 'text' })
+  inputType!: string;
+
+  @Prop({ type: String })
+  inputValue!: string;
+
+  @Prop({ type: RegExp })
+  inputPattern!: RegExp;
+
+  @Prop({ type: Function })
+  inputValidator!: (data: any) => boolean;
+
+  @Prop({ type: String })
+  inputErrorMessage!: string;
+
+  @Prop({ type: Boolean })
+  roundButton!: boolean;
+
+  @Prop({ type: Boolean })
+  confirmButtonLoading!: boolean;
+
+  @Prop({ type: String, default: '11px' })
+  loadingSize!: string;
+
+  show = false;
+  value = '';
+  errorMessage = '';
+  showErrorMessage = false;
+  dialogStyle = {
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%,-50%)'
+  };
+
+  get myCancelButtonText () {
+    if (this.cancelButtonText) {
+      return this.cancelButtonText;
     }
-  },
-  data () {
-    return {
-      show: false,
-      value: '',
-      errorMessage: '',
-      showErrorMessage: false,
-      dialogStyle: {
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%,-50%)'
-      }
-    };
-  },
-  computed: {
-    myCancelButtonText () {
-      if (this.cancelButtonText) {
-        return this.cancelButtonText;
-      }
-      return this.t('LinViewUI.MessageBox.cancelButtonText');
-    },
-    myConfirmButtonText () {
-      if (this.confirmButtonText) {
-        return this.confirmButtonText;
-      }
-      return this.t('LinViewUI.MessageBox.confirmButtonText');
-    },
-    myInputErrorMessage () {
-      if (this.inputErrorMessage) {
-        return this.inputErrorMessage;
-      }
-      return this.t('LinViewUI.MessageBox.inputErrorMessage');
+    return this.t('LinViewUI.MessageBox.cancelButtonText');
+  }
+
+  get myConfirmButtonText () {
+    if (this.confirmButtonText) {
+      return this.confirmButtonText;
     }
-  },
+    return this.t('LinViewUI.MessageBox.confirmButtonText');
+  }
+
+  get myInputErrorMessage () {
+    if (this.inputErrorMessage) {
+      return this.inputErrorMessage;
+    }
+    return this.t('LinViewUI.MessageBox.inputErrorMessage');
+  }
+
   mounted () {
     if (this.closeOnPressEscape) {
       window.addEventListener('keyup', this.onESCDown);
@@ -185,75 +217,8 @@ export default {
     if (this.myInputErrorMessage) {
       this.errorMessage = this.myInputErrorMessage;
     }
-  },
-  methods: {
-    emitClose (by) {
-      this.$emit('close', {
-        by,
-        value: this.value
-      });
-    },
-    handleClose (by) {
-      if (typeof this.beforeClose === 'function') {
-        const done = () => {
-          this.show = false;
-          this.emitClose(by);
-        };
-        this.beforeClose({ by }, this, done);
-      } else {
-        this.show = false;
-        this.emitClose(by);
-      }
-    },
-    onMaskClick () {
-      if (this.closeOnClickModal) {
-        this.handleClose('mask');
-      }
-    },
-    onCancelBtnClick () {
-      this.handleClose('cancelButton');
-    },
-    onConfirmBtnClick () {
-      if (this.showInput && (this.inputPattern || this.inputValidator)) {
-        this.onInputChange(this.value);
-        if (!this.showErrorMessage) {
-          this.handleClose('confirmButton');
-        }
-      } else {
-        this.handleClose('confirmButton');
-      }
-    },
-    onIconClick () {
-      this.handleClose('icon');
-    },
-    onESCDown (event) {
-      if (event.keyCode === 27) {
-        this.handleClose('esc');
-      }
-    },
-    hashchange () {
-      this.handleClose('hash');
-    },
-    onInputChange (data) {
-      if (typeof this.inputValidator === 'function') {
-        const result = this.inputValidator(data);
-        if (typeof result === 'boolean') {
-          this.showErrorMessage = !result;
-        } else if (typeof result === 'string') {
-          if (result) {
-            this.showErrorMessage = true;
-            this.errorMessage = result;
-          } else {
-            this.showErrorMessage = false;
-            this.errorMessage = this.myInputErrorMessage;
-          }
-        }
-      } else if (this.inputPattern) {
-        const result = this.inputPattern.test(data);
-        this.showErrorMessage = !result;
-      }
-    }
-  },
+  }
+
   beforeDestroy () {
     if (this.closeOnPressEscape) {
       window.removeEventListener('keyup', this.onESCDown);
@@ -262,5 +227,80 @@ export default {
       window.removeEventListener('hashchange', this.hashchange);
     }
   }
-};
+
+  emitClose (by) {
+    this.$emit('close', {
+      by,
+      value: this.value
+    });
+  }
+
+  handleClose (by) {
+    if (typeof this.beforeClose === 'function') {
+      const done = () => {
+        this.show = false;
+        this.emitClose(by);
+      };
+      this.beforeClose({ by }, this, done);
+    } else {
+      this.show = false;
+      this.emitClose(by);
+    }
+  }
+
+  onMaskClick () {
+    if (this.closeOnClickModal) {
+      this.handleClose('mask');
+    }
+  }
+
+  onCancelBtnClick () {
+    this.handleClose('cancelButton');
+  }
+
+  onConfirmBtnClick () {
+    if (this.showInput && (this.inputPattern || this.inputValidator)) {
+      this.onInputChange(this.value);
+      if (!this.showErrorMessage) {
+        this.handleClose('confirmButton');
+      }
+    } else {
+      this.handleClose('confirmButton');
+    }
+  }
+
+  onIconClick () {
+    this.handleClose('icon');
+  }
+
+  onESCDown (event) {
+    if (event.keyCode === 27) {
+      this.handleClose('esc');
+    }
+  }
+
+  hashchange () {
+    this.handleClose('hash');
+  }
+
+  onInputChange (data) {
+    if (typeof this.inputValidator === 'function') {
+      const result = this.inputValidator(data);
+      if (typeof result === 'boolean') {
+        this.showErrorMessage = !result;
+      } else if (typeof result === 'string') {
+        if (result) {
+          this.showErrorMessage = true;
+          this.errorMessage = result;
+        } else {
+          this.showErrorMessage = false;
+          this.errorMessage = this.myInputErrorMessage;
+        }
+      }
+    } else if (this.inputPattern) {
+      const result = this.inputPattern.test(data);
+      this.showErrorMessage = !result;
+    }
+  }
+}
 </script>

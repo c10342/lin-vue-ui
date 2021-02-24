@@ -6,9 +6,9 @@ import './style.scss';
 const MessageBoxConstruct = Vue.extend(MessageBox);
 
 class LinMessageBox {
-  options = {};
+  options:MessageBox|any = {};
 
-  instance = null;
+  instance:MessageBox|null = null
 
   constructor (options) {
     this.options = options || {};
@@ -21,19 +21,19 @@ class LinMessageBox {
     if (this.instance) {
       Object.keys(this.instance.$props || {}).forEach((key) => {
         if (key in this.options) {
-          this.instance[key] = this.options[key];
+          this.instance && (this.instance[key] = this.options[key]);
         }
       });
       this.instance.$mount();
       document.body.appendChild(this.instance.$el);
-      this.instance.show = true;
+      (this.instance as any).show = true;
       this.instance.$once('close', (data) => {
         if (data.by === 'confirmButton') {
           this.options.resolve(data);
         } else {
           this.options.reject(data);
         }
-        this.instance.$nextTick(() => {
+        this.instance && this.instance.$nextTick(() => {
           this.destory();
         });
       });
