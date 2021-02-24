@@ -93,7 +93,6 @@ import {
   Vue,
   Component,
   Prop,
-  ProvideReactive,
   Watch
 } from 'vue-property-decorator';
 import LocaleMixin from 'src/mixins/locale';
@@ -106,6 +105,11 @@ import Input from 'packages/Input/index';
   mixins: [LocaleMixin, documentClick],
   components: {
     [Input.name]: Input
+  },
+  provide () {
+    return {
+      group: this
+    };
   }
 })
 export default class LinChoiceGroup extends Vue {
@@ -159,9 +163,6 @@ export default class LinChoiceGroup extends Vue {
 
   @Prop({ type: Function, default: null })
   filterMethod!: (data: any, props:any) => boolean;
-
-  @ProvideReactive()
-  group = this;
 
   groupLabel = '';
 
