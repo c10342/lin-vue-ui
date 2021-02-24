@@ -7,26 +7,24 @@
   </button>
 </template>
 
-<script>
-export default {
-  name: 'LinHoverEffect',
-  props: {
-    type: {
-      type: String,
-      default: 'primary'
-    },
-    theme: {
-      type: String,
-      default: 'neon'
-    },
-    text: {
-      type: String
-    }
-  },
-  methods: {
-    onClick () {
-      this.$emit('click');
-    }
+<script lang="ts">
+import { Vue, Component, Prop } from 'vue-property-decorator';
+
+@Component({
+  name: 'LinHoverEffect'
+})
+export default class LinHoverEffect extends Vue {
+  @Prop({ type: String, default: 'primary' })
+  type!:string
+
+  @Prop({ type: String, default: 'neon' })
+  theme!:string
+
+  @Prop({ type: String })
+  text!:string
+
+  onClick () {
+    this.$emit('click');
   }
-};
+}
 </script>
