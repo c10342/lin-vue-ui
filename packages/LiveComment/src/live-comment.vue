@@ -64,150 +64,145 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { Mixins, Component, Prop, Watch } from 'vue-property-decorator';
 import LocaleMixin from 'src/mixins/locale';
-import Image from 'packages/Image/index.js';
+import Image from 'packages/Image/index';
 import defaultAvator from 'src/images/default_avatar.png';
+import { Obj } from './type';
 
-export default {
+@Component({
   name: 'LinLiveComment',
-  mixins: [LocaleMixin],
   components: {
     [Image.name]: Image
-  },
-  props: {
-    commentList: {
-      type: Array,
-      default: () => []
-    },
-    fixComment: {
-      type: Object,
-      default: null
-    },
-    value: {
-      type: String,
-      default: ''
-    },
-    btnText: {
-      type: String
-    },
-    arrowComment: {
-      type: Boolean,
-      default: false
-    },
-    placeholder: {
-      type: String
-    },
-    maxlength: {
-      type: Number,
-      default: -1
-    },
-    throttle: {
-      type: Boolean,
-      default: true
-    },
-    title: {
-      type: String
-    },
-    viewCount: {
-      type: Number,
-      default: 0
-    },
-    defaultAvator: {
-      type: String,
-      default: defaultAvator
-    },
-    isLoading: {
-      type: Boolean,
-      default: false
+  }
+})
+export default class LinLiveComment extends Mixins(LocaleMixin) {
+  @Prop({ type: Array, default: () => [] })
+  commentList!: any[];
+
+  @Prop({ type: Object, default: null })
+  fixComment!: Record<string, any>;
+
+  @Prop({ type: String, default: '' })
+  value!: string;
+
+  @Prop({ type: String })
+  btnText!: string;
+
+  @Prop({ type: Boolean, default: false })
+  arrowComment!: boolean;
+
+  @Prop({ type: String })
+  placeholder!: string;
+
+  @Prop({ type: Number, default: -1 })
+  maxlength!: number;
+
+  @Prop({ type: Boolean, default: true })
+  throttle!: boolean;
+
+  @Prop({ type: String })
+  title!: string;
+
+  @Prop({ type: Number, default: 0 })
+  viewCount!: number;
+
+  @Prop({ type: String, default: defaultAvator })
+  defaultAvator!: string;
+
+  @Prop({ type: Boolean, default: false })
+  isLoading!: boolean;
+
+  isScrollToBottom = true;
+
+  scrollTimer: number | null = null;
+
+  get commentPlaceholder () {
+    if (this.placeholder) {
+      return this.placeholder;
     }
-  },
-  data () {
-    return {
-      isScrollToBottom: true
-    };
-  },
-  methods: {
-    onScroll (e) {
-      if (this.scrollTimer) {
-        clearTimeout(this.scrollTimer);
-      }
-      if (this.throttle) {
-        this.scrollTimer = setTimeout(() => {
-          this.handlerOnScroll(e);
-        }, 500);
-      } else {
-        this.handlerOnScroll(e);
-      }
-    },
-    handlerOnScroll (e) {
-      const { scrollTop, scrollHeight, offsetHeight } = e.target;
-      if (scrollTop + offsetHeight + 40 < scrollHeight) {
-        this.isScrollToBottom = false;
-      } else {
-        this.isScrollToBottom = true;
-        this.$emit('toBottom');
-      }
-      this.$emit('scroll', e);
-    },
-    changeContent (str) {
-      if (!str) {
-        return '';
-      }
-      return str.replace(/\n/g, '<br/>');
-    },
-    toBottom () {
-      this.$refs.scroll.scrollTop = this.$refs.scroll.scrollHeight;
-      this.isScrollToBottom = true;
-    },
-    publishComment () {
-      if (this.isLoading) {
-        return;
-      }
-      this.$emit('sendBtnClick');
-    },
-    onInput (e) {
-      const { value } = e.target;
-      this.$emit('input', value);
-    },
-    gotoLogin () {
-      this.$emit('loginBtnClick');
+    return this.t('LinViewUI.LiveComment.placeholder');
+  }
+
+  get textareaAttr () {
+    const obj: Obj = {};
+    if (this.maxlength !== -1) {
+      obj.maxlength = this.maxlength;
     }
-  },
-  watch: {
-    commentList: {
-      immediate: true,
-      handler (newVal) {
-        if (newVal.length > 0 && this.isScrollToBottom) {
-          this.$nextTick(() => {
-            this.$refs.scroll.scrollTop = this.$refs.scroll.scrollHeight;
-          });
-        }
-      }
+    if (this.arrowComment) {
+      obj.placeholder = this.commentPlaceholder;
     }
-  },
-  computed: {
-    commentPlaceholder () {
-      if (this.placeholder) {
-        return this.placeholder;
-      }
-      return this.t('LinViewUI.LiveComment.placeholder');
-    },
-    textareaAttr () {
-      const obj = {};
-      if (this.maxlength !== -1) {
-        obj.maxlength = this.maxlength;
-      }
-      if (this.arrowComment) {
-        obj.placeholder = this.commentPlaceholder;
-      }
-      return obj;
+    return obj;
+  }
+
+  @Watch('commentList', { immediate: true })
+  onCommentListChange (newVal) {
+    if (newVal.length > 0 && this.isScrollToBottom) {
+      this.$nextTick(() => {
+        const scroll = this.$refs.scroll as HTMLElement;
+        scroll.scrollTop = scroll.scrollHeight;
+      });
     }
-  },
+  }
+
   beforeDestroy () {
     if (this.scrollTimer) {
       clearTimeout(this.scrollTimer);
     }
   }
-};
+
+  onScroll (e) {
+    if (this.scrollTimer) {
+      clearTimeout(this.scrollTimer);
+    }
+    if (this.throttle) {
+      this.scrollTimer = window.setTimeout(() => {
+        this.handlerOnScroll(e);
+      }, 500);
+    } else {
+      this.handlerOnScroll(e);
+    }
+  }
+
+  handlerOnScroll (e) {
+    const { scrollTop, scrollHeight, offsetHeight } = e.target;
+    if (scrollTop + offsetHeight + 40 < scrollHeight) {
+      this.isScrollToBottom = false;
+    } else {
+      this.isScrollToBottom = true;
+      this.$emit('toBottom');
+    }
+    this.$emit('scroll', e);
+  }
+
+  changeContent (str) {
+    if (!str) {
+      return '';
+    }
+    return str.replace(/\n/g, '<br/>');
+  }
+
+  toBottom () {
+    const scroll = this.$refs.scroll as HTMLElement;
+    scroll.scrollTop = scroll.scrollHeight;
+    this.isScrollToBottom = true;
+  }
+
+  publishComment () {
+    if (this.isLoading) {
+      return;
+    }
+    this.$emit('sendBtnClick');
+  }
+
+  onInput (e) {
+    const { value } = e.target;
+    this.$emit('input', value);
+  }
+
+  gotoLogin () {
+    this.$emit('loginBtnClick');
+  }
+}
 </script>
