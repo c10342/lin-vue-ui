@@ -12,7 +12,7 @@ import { Vue, Component, Prop } from 'vue-property-decorator';
   name: 'LinForm',
   provide () {
     return {
-      Form: this
+      FormInstance: this
     };
   }
 })
