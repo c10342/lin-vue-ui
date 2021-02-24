@@ -20,7 +20,7 @@ import {
   name: 'LinChoiceOption',
   provide () {
     return {
-      option: this
+      ChoiceOptionInstance: this
     };
   }
 })
