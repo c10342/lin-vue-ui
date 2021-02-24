@@ -12,7 +12,7 @@ import { cloneDeep } from 'lodash';
   name: 'LinCollapseGroup',
   provide () {
     return {
-      collapseGroup: this
+      CollapseGroupInstance: this
     };
   }
 })
