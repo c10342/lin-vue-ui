@@ -108,7 +108,7 @@ import Input from 'packages/Input/index';
   },
   provide () {
     return {
-      group: this
+      ChoiceGroupInstance: this
     };
   }
 })
