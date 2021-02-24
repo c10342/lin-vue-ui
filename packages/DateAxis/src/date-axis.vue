@@ -89,321 +89,343 @@
   </div>
 </template>
 
-<script>
-import DatePicker from 'packages/DatePicker/index.js';
-import documentClick from 'src/mixins/documentClick';
+<script lang="ts">
+import DatePicker from 'packages/DatePicker/index';
+import DocumentClickMixin from 'src/mixins/documentClick';
 import LocaleMixin from 'src/mixins/locale';
 import DateMixin from 'src/mixins/date';
 import getYearMonthDay from 'src/utils/getYearMonthDay';
 import { throttle } from 'lodash';
+import { Component, Model, Mixins } from 'vue-property-decorator';
 
-export default {
+@Component({
   name: 'LinDateAxis',
-  mixins: [documentClick, LocaleMixin, DateMixin],
   components: {
     [DatePicker.name]: DatePicker
-  },
-  model: {
-    prop: 'value',
-    event: 'change'
-  },
-  props: {
-    value: {
-      type: [Date, String]
+  }
+})
+export default class LinDateAxis extends Mixins(
+  DocumentClickMixin,
+  LocaleMixin,
+  DateMixin
+) {
+  @Model('change', { type: [Date, String] })
+  value!: Date|string;
+
+  isShowPopup = false;
+  selectTime = new Date();
+  timeList: Date[] = [];
+  lineWidth = '0px';
+  lineTranslateX = '0px';
+  isRight = true;
+  left = '0px';
+
+  daysObj = {
+    0: this.t('LinViewUI.DateAxis.sun'),
+    1: this.t('LinViewUI.DateAxis.mon'),
+    2: this.t('LinViewUI.DateAxis.tue'),
+    3: this.t('LinViewUI.DateAxis.wed'),
+    4: this.t('LinViewUI.DateAxis.thu'),
+    5: this.t('LinViewUI.DateAxis.fir'),
+    6: this.t('LinViewUI.DateAxis.sat')
+  };
+
+  throttleFn = throttle(this.setLine, 500);
+
+  get currentDate () {
+    if (this.value == null) {
+      return this.selectTime;
     }
-    // disabledBeforeDate: Date,
-    // disabledAfterDate: Date,
-    // disabledRangeDate: Array,
-    // disabledDate: Array,
-    // disabled: {
-    //   type: Boolean,
-    //   default: false,
-    // },
-  },
-  data () {
-    return {
-      isShowPopup: false,
-      selectTime: new Date(),
-      timeList: [],
-      lineWidth: '0px',
-      lineTranslateX: '0px',
-      isRight: true,
-      left: '0px'
-    };
-  },
+    if (this.value instanceof Date) {
+      return this.value;
+    }
+    const now = new Date();
+    return now;
+  }
+
+  set currentDate (val) {
+    if (this.isEqual(this.currentDate, val)) {
+      return;
+    }
+    if (this.value == null) {
+      this.selectTime = val;
+    }
+    this.$emit('change', val);
+  }
+
   created () {
-    this.daysObj = {
-      0: this.t('LinViewUI.DateAxis.sun'),
-      1: this.t('LinViewUI.DateAxis.mon'),
-      2: this.t('LinViewUI.DateAxis.tue'),
-      3: this.t('LinViewUI.DateAxis.wed'),
-      4: this.t('LinViewUI.DateAxis.thu'),
-      5: this.t('LinViewUI.DateAxis.fir'),
-      6: this.t('LinViewUI.DateAxis.sat')
-    };
+    // this.daysObj = {
+    //   0: this.t("LinViewUI.DateAxis.sun"),
+    //   1: this.t("LinViewUI.DateAxis.mon"),
+    //   2: this.t("LinViewUI.DateAxis.tue"),
+    //   3: this.t("LinViewUI.DateAxis.wed"),
+    //   4: this.t("LinViewUI.DateAxis.thu"),
+    //   5: this.t("LinViewUI.DateAxis.fir"),
+    //   6: this.t("LinViewUI.DateAxis.sat"),
+    // };
     this.init(this.currentDate);
-  },
+  }
+
   mounted () {
-    this.throttleFn = throttle(this.setLine, 500);
+    // this.throttleFn = throttle(this.setLine, 500);
     window.addEventListener('resize', this.throttleFn);
-  },
+  }
+
   beforeDestroy () {
     window.removeEventListener('resize', this.throttleFn);
-  },
-  methods: {
-    setPlacement () {
-      this.$nextTick(() => {
-        const { scrollContainer } = this.$refs;
-        const { notOutsideContainer } = this.$refs;
-        const right = window.innerWidth - notOutsideContainer.getBoundingClientRect().left;
-        const { left } = notOutsideContainer.getBoundingClientRect();
-        if (right > scrollContainer.clientWidth) {
-          this.setToRight();
-        } else if (left > scrollContainer.clientWidth) {
-          this.setToLeft();
-        } else {
-          this.setToRight();
-        }
-      });
-    },
-    setToRight () {
-      this.isRight = true;
-      this.left = '0px';
-    },
-    setToLeft () {
-      this.isRight = false;
-      const { scrollContainer } = this.$refs;
-      const { notOutsideContainer } = this.$refs;
-      this.left = `${
-        -scrollContainer.clientWidth + notOutsideContainer.clientWidth
-      }px`;
-    },
-    onDateSelect (date) {
-      const startTime = this.timeList[0];
-      const endTime = this.timeList[this.timeList.length - 1];
-      if (date < startTime || date > endTime) {
-        this.init(date);
+  }
+
+  setPlacement () {
+    this.$nextTick(() => {
+      const scrollContainer = this.$refs.scrollContainer as HTMLElement;
+      const notOutsideContainer = this.$refs.notOutsideContainer as HTMLElement;
+      const right =
+        window.innerWidth - notOutsideContainer.getBoundingClientRect().left;
+      const { left } = notOutsideContainer.getBoundingClientRect();
+      if (right > scrollContainer.clientWidth) {
+        this.setToRight();
+      } else if (left > scrollContainer.clientWidth) {
+        this.setToLeft();
       } else {
-        this.setLine();
+        this.setToRight();
       }
-      this.hidePopup();
-      this.$emit('select', date);
-    },
-    prevWeek () {
-      if (this.disabled) {
-        return;
-      }
-      let { currentDate } = this;
-      currentDate = currentDate.getTime() - 60 * 60 * 1000 * 24 * 7;
-      currentDate = new Date(currentDate);
-      const selDate = currentDate;
-      // 上一周的最后一天，即周六
-      const sat = new Date(
-        currentDate.getTime() + 60 * 60 * 1000 * 24 * (6 - currentDate.getDay())
-      );
-      if (this.disabledBeforeDate) {
-        const d = new Date(this.disabledBeforeDate);
-        if (this.isEqAndLt(sat, d)) {
-          return;
-        }
-      }
-      // 如果被禁用，先找后面的
-      while (this.isDisabledDate(currentDate) && this.isLt(currentDate, sat)) {
-        currentDate = currentDate.getTime() + 60 * 60 * 1000 * 24;
-        currentDate = new Date(currentDate);
-      }
+    });
+  }
 
-      if (this.isDisabledDate(currentDate)) {
-        currentDate = new Date(selDate.getTime() - 60 * 60 * 1000 * 24);
-        while (this.isDisabledDate(currentDate)) {
-          currentDate = currentDate.getTime() - 60 * 60 * 1000 * 24;
-          currentDate = new Date(currentDate);
-        }
-      }
+  setToRight () {
+    this.isRight = true;
+    this.left = '0px';
+  }
 
-      this.currentDate = currentDate;
-      this.init(currentDate);
-      this.$emit('prevWeek', currentDate);
-    },
-    nextWeek () {
-      if (this.disabled) {
-        return;
-      }
-      let { currentDate } = this;
-      currentDate = currentDate.getTime() + 60 * 60 * 1000 * 24 * 7;
-      currentDate = new Date(currentDate);
+  setToLeft () {
+    this.isRight = false;
+    const scrollContainer = this.$refs.scrollContainer as HTMLElement;
+    const notOutsideContainer = this.$refs.notOutsideContainer as HTMLElement;
+    this.left = `${
+      -scrollContainer.clientWidth + notOutsideContainer.clientWidth
+    }px`;
+  }
 
-      const selDate = currentDate;
-      // 上一周的第一天，即周日
-      const sun = new Date(
-        currentDate.getTime() - 60 * 60 * 1000 * 24 * currentDate.getDay()
-      );
-      if (this.disabledAfterDate) {
-        const d = new Date(this.disabledAfterDate);
-        if (this.isEqAndGt(sun, d)) {
-          return;
-        }
-      }
-      // 如果被禁用，先找前面的
-      while (this.isDisabledDate(currentDate) && this.isGt(currentDate, sun)) {
-        currentDate = currentDate.getTime() - 60 * 60 * 1000 * 24;
-        currentDate = new Date(currentDate);
-      }
-
-      if (this.isDisabledDate(currentDate)) {
-        currentDate = new Date(selDate.getTime() + 60 * 60 * 1000 * 24);
-        while (this.isDisabledDate(currentDate)) {
-          currentDate = currentDate.getTime() + 60 * 60 * 1000 * 24;
-          currentDate = new Date(currentDate);
-        }
-      }
-
-      this.currentDate = currentDate;
-      this.init(currentDate);
-      this.$emit('nextWeek', currentDate);
-    },
-    prevDay () {
-      if (this.disabled) {
-        return;
-      }
-      let { currentDate } = this;
-      currentDate = currentDate.getTime() - 60 * 60 * 1000 * 24;
-      currentDate = new Date(currentDate);
-      if (this.disabledBeforeDate) {
-        const d = new Date(this.disabledBeforeDate);
-        if (this.isEqAndLt(currentDate, d)) {
-          return;
-        }
-      }
-      while (this.isDisabledDate(currentDate)) {
-        currentDate = currentDate.getTime() - 60 * 60 * 1000 * 24;
-        currentDate = new Date(currentDate);
-      }
-      this.currentDate = currentDate;
-      const startTime = this.timeList[0];
-      if (currentDate < startTime.getTime()) {
-        this.init(currentDate);
-      } else {
-        this.setLine();
-      }
-      this.$emit('prevDay', currentDate);
-    },
-    nextDay () {
-      if (this.disabled) {
-        return;
-      }
-      let { currentDate } = this;
-      currentDate = currentDate.getTime() + 60 * 60 * 1000 * 24;
-      currentDate = new Date(currentDate);
-      if (this.disabledAfterDate) {
-        const d = new Date(this.disabledAfterDate);
-        if (this.isEqAndGt(currentDate, d)) {
-          return;
-        }
-      }
-      while (this.isDisabledDate(currentDate)) {
-        currentDate = currentDate.getTime() + 60 * 60 * 1000 * 24;
-        currentDate = new Date(currentDate);
-      }
-      this.currentDate = currentDate;
-      const endTime = this.timeList[this.timeList.length - 1];
-      if (currentDate > endTime.getTime()) {
-        this.init(currentDate);
-      } else {
-        this.setLine();
-      }
-      this.$emit('nextDay', currentDate);
-    },
-    onItemClick (date) {
-      if (this.isDisabledDate(date)) {
-        return;
-      }
-      if (this.isEqual(this.currentDate, date)) {
-        return;
-      }
-      this.currentDate = date;
+  onDateSelect (date) {
+    const startTime = this.timeList[0];
+    const endTime = this.timeList[this.timeList.length - 1];
+    if (date < startTime || date > endTime) {
+      this.init(date);
+    } else {
       this.setLine();
-      this.$emit('select', date);
-    },
-    formatDate (date) {
-      const d = getYearMonthDay(date);
-      return `${d.month}-${d.day}`;
-    },
-    formatDay (date) {
-      const day = date.getDay();
-      return this.daysObj[day];
-    },
-    init (currentDate) {
-      const day = currentDate.getDay();
-      const timeList = [];
-      const d = new Date(currentDate);
-      d.setDate(d.getDate() - day);
-      for (let i = 0; i < 7; i++) {
-        timeList.push(new Date(d));
-        d.setDate(d.getDate() + 1);
-      }
-      this.timeList = timeList;
-      this.setLine();
-    },
-    setLine () {
-      this.$nextTick(() => {
-        const dom = document.getElementById(
-          `dateAxis-${this.currentDate.getDay()}`
-        );
-        if (dom) {
-          this.lineWidth = `${dom.offsetWidth}px`;
-          const { left } = dom.getBoundingClientRect();
-          const { dateAxisWrapper } = this.$refs;
-          const dateAxisWrapperX = dateAxisWrapper.getBoundingClientRect().left;
-          this.lineTranslateX = `${left - dateAxisWrapperX}px`;
-        }
-      });
-    },
-    onMoreClick () {
-      if (this.isShowPopup) {
-        this.hidePopup();
-      } else {
-        this.showPopup();
-      }
-    },
-    hidePopup () {
-      this.isShowPopup = false;
-      this.$emit('hide');
-    },
-    showPopup () {
-      this.isShowPopup = true;
-      this.$emit('show');
-      this.setPlacement();
-    },
-    onDocumentClick (event) {
-      const { notOutsideContainer } = this.$refs;
-      if (!notOutsideContainer.contains(event.target)) {
-        this.hidePopup();
+    }
+    this.hidePopup();
+    this.$emit('select', date);
+  }
+
+  prevWeek () {
+    if (this.disabled) {
+      return;
+    }
+    let { currentDate } = this;
+    const res = currentDate.getTime() - 60 * 60 * 1000 * 24 * 7;
+    currentDate = new Date(res);
+    const selDate = currentDate;
+    // 上一周的最后一天，即周六
+    const sat = new Date(
+      currentDate.getTime() + 60 * 60 * 1000 * 24 * (6 - currentDate.getDay())
+    );
+    if (this.disabledBeforeDate) {
+      const d = new Date(this.disabledBeforeDate);
+      if (this.isEqAndLt(sat, d)) {
+        return;
       }
     }
-  },
-  computed: {
-    currentDate: {
-      get () {
-        if (this.value == null) {
-          return this.selectTime;
-        }
-        if (this.value instanceof Date) {
-          return this.value;
-        }
-        const now = new Date();
-        return now;
-      },
-      set (val) {
-        if (this.isEqual(this.currentDate, val)) {
-          return;
-        }
-        if (this.value == null) {
-          this.selectTime = val;
-        }
-        this.$emit('change', val);
+    // 如果被禁用，先找后面的
+    while (this.isDisabledDate(currentDate) && this.isLt(currentDate, sat)) {
+      // currentDate = currentDate.getTime() + 60 * 60 * 1000 * 24;
+      currentDate = new Date(currentDate.getTime() + 60 * 60 * 1000 * 24);
+    }
+
+    if (this.isDisabledDate(currentDate)) {
+      currentDate = new Date(selDate.getTime() - 60 * 60 * 1000 * 24);
+      while (this.isDisabledDate(currentDate)) {
+        // currentDate = currentDate.getTime() - 60 * 60 * 1000 * 24;
+        currentDate = new Date(currentDate.getTime() - 60 * 60 * 1000 * 24);
       }
+    }
+
+    this.currentDate = currentDate;
+    this.init(currentDate);
+    this.$emit('prevWeek', currentDate);
+  }
+
+  nextWeek () {
+    if (this.disabled) {
+      return;
+    }
+    let { currentDate } = this;
+    const res = currentDate.getTime() + 60 * 60 * 1000 * 24 * 7;
+    currentDate = new Date(res);
+
+    const selDate = currentDate;
+    // 上一周的第一天，即周日
+    const sun = new Date(
+      currentDate.getTime() - 60 * 60 * 1000 * 24 * currentDate.getDay()
+    );
+    if (this.disabledAfterDate) {
+      const d = new Date(this.disabledAfterDate);
+      if (this.isEqAndGt(sun, d)) {
+        return;
+      }
+    }
+    // 如果被禁用，先找前面的
+    while (this.isDisabledDate(currentDate) && this.isGt(currentDate, sun)) {
+      const res = currentDate.getTime() - 60 * 60 * 1000 * 24;
+      currentDate = new Date(res);
+    }
+
+    if (this.isDisabledDate(currentDate)) {
+      currentDate = new Date(selDate.getTime() + 60 * 60 * 1000 * 24);
+      while (this.isDisabledDate(currentDate)) {
+        const res = currentDate.getTime() + 60 * 60 * 1000 * 24;
+        currentDate = new Date(res);
+      }
+    }
+
+    this.currentDate = currentDate;
+    this.init(currentDate);
+    this.$emit('nextWeek', currentDate);
+  }
+
+  prevDay () {
+    if (this.disabled) {
+      return;
+    }
+    let { currentDate } = this;
+    const res = currentDate.getTime() - 60 * 60 * 1000 * 24;
+    currentDate = new Date(res);
+    if (this.disabledBeforeDate) {
+      const d = new Date(this.disabledBeforeDate);
+      if (this.isEqAndLt(currentDate, d)) {
+        return;
+      }
+    }
+    while (this.isDisabledDate(currentDate)) {
+      const res = currentDate.getTime() - 60 * 60 * 1000 * 24;
+      currentDate = new Date(res);
+    }
+    this.currentDate = currentDate;
+    const startTime = this.timeList[0];
+    if (currentDate.getTime() < startTime.getTime()) {
+      this.init(currentDate);
+    } else {
+      this.setLine();
+    }
+    this.$emit('prevDay', currentDate);
+  }
+
+  nextDay () {
+    if (this.disabled) {
+      return;
+    }
+    let { currentDate } = this;
+    const res = currentDate.getTime() + 60 * 60 * 1000 * 24;
+    currentDate = new Date(res);
+    if (this.disabledAfterDate) {
+      const d = new Date(this.disabledAfterDate);
+      if (this.isEqAndGt(currentDate, d)) {
+        return;
+      }
+    }
+    while (this.isDisabledDate(currentDate)) {
+      // currentDate = currentDate.getTime() + 60 * 60 * 1000 * 24;
+      currentDate = new Date(currentDate.getTime() + 60 * 60 * 1000 * 24);
+    }
+    this.currentDate = currentDate;
+    const endTime = this.timeList[this.timeList.length - 1];
+    if (currentDate.getTime() > endTime.getTime()) {
+      this.init(currentDate);
+    } else {
+      this.setLine();
+    }
+    this.$emit('nextDay', currentDate);
+  }
+
+  onItemClick (date) {
+    if (this.isDisabledDate(date)) {
+      return;
+    }
+    if (this.isEqual(this.currentDate, date)) {
+      return;
+    }
+    this.currentDate = date;
+    this.setLine();
+    this.$emit('select', date);
+  }
+
+  formatDate (date) {
+    const d = getYearMonthDay(date);
+    if (d) {
+      return `${d.month}-${d.day}`;
+    }
+    return '';
+  }
+
+  formatDay (date) {
+    const day = date.getDay();
+    return this.daysObj[day];
+  }
+
+  init (currentDate) {
+    const day = currentDate.getDay();
+    const timeList: Date[] = [];
+    const d = new Date(currentDate);
+    d.setDate(d.getDate() - day);
+    for (let i = 0; i < 7; i++) {
+      timeList.push(new Date(d));
+      d.setDate(d.getDate() + 1);
+    }
+    this.timeList = timeList;
+    this.setLine();
+  }
+
+  setLine () {
+    this.$nextTick(() => {
+      const dom = document.getElementById(
+        `dateAxis-${this.currentDate.getDay()}`
+      );
+      if (dom) {
+        this.lineWidth = `${dom.offsetWidth}px`;
+        const { left } = dom.getBoundingClientRect();
+        // const { dateAxisWrapper } = this.$refs;
+        const dateAxisWrapper = this.$refs.dateAxisWrapper as HTMLElement;
+        const dateAxisWrapperX = dateAxisWrapper.getBoundingClientRect().left;
+        this.lineTranslateX = `${left - dateAxisWrapperX}px`;
+      }
+    });
+  }
+
+  onMoreClick () {
+    if (this.isShowPopup) {
+      this.hidePopup();
+    } else {
+      this.showPopup();
     }
   }
-};
+
+  hidePopup () {
+    this.isShowPopup = false;
+    this.$emit('hide');
+  }
+
+  showPopup () {
+    this.isShowPopup = true;
+    this.$emit('show');
+    this.setPlacement();
+  }
+
+  onDocumentClick (event) {
+    // const { notOutsideContainer } = this.$refs;
+    const notOutsideContainer = this.$refs.notOutsideContainer as HTMLElement;
+    if (!notOutsideContainer.contains(event.target)) {
+      this.hidePopup();
+    }
+  }
+}
 </script>
