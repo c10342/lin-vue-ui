@@ -5,11 +5,16 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop, ProvideReactive } from 'vue-property-decorator';
+import { Vue, Component, Prop } from 'vue-property-decorator';
 import { cloneDeep } from 'lodash';
 
 @Component({
-  name: 'LinCollapseGroup'
+  name: 'LinCollapseGroup',
+  provide () {
+    return {
+      collapseGroup: this
+    };
+  }
 })
 export default class LinCollapseGroup extends Vue {
   @Prop({ type: [Array, String] })
@@ -20,9 +25,6 @@ export default class LinCollapseGroup extends Vue {
 
   @Prop({ type: Boolean, default: false })
   simple!: boolean;
-
-  @ProvideReactive()
-  collapseGroup = this;
 
   valueData = '';
 
