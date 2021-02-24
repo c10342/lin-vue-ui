@@ -49,7 +49,7 @@
 <script lang="ts">
 import { Component, Prop, Mixins } from 'vue-property-decorator';
 import { OptionsItem, ShowFormat, LazyLoad, OptionsListItem } from './type';
-import Input from 'packages/Input/index.js';
+import Input from 'packages/Input/index';
 import DocumentClickMixin from 'src/mixins/documentClick';
 import LocaleMixin from 'src/mixins/locale';
 import Panel from './panel.vue';
