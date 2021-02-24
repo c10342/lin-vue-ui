@@ -36,102 +36,94 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { Vue, Component, Prop } from 'vue-property-decorator';
 import dispatch from 'src/utils/dispatch';
+import { Obj } from './type';
 
-export default {
-  name: 'LinInput',
-  data () {
-    return {
-      // 用于控制是否显示密码框
-      passwordVisible: false
-    };
-  },
-  props: {
-    placeholder: {
-      type: String,
-      default: ''
-    },
-    type: {
-      type: String,
-      default: 'text'
-    },
-    name: {
-      type: String,
-      default: ''
-    },
-    disabled: {
-      type: Boolean,
-      default: false
-    },
-    value: {
-      type: String,
-      default: ''
-    },
-    clearable: {
-      type: Boolean,
-      default: false
-    },
-    showPassword: {
-      type: Boolean,
-      default: false
-    },
-    maxlength: {
-      type: Number,
-      default: -1
-    },
-    minlength: {
-      type: Number,
-      default: -1
-    }
-  },
-  computed: {
-    showSuffix () {
-      return this.clearable || this.showPassword;
-    },
-    inputAttr () {
-      const obj = {};
-      if (this.maxlength !== -1) {
-        obj.maxlength = this.maxlength;
-      }
-      if (this.minlength !== -1) {
-        obj.minlength = this.minlength;
-      }
-      if (this.name) {
-        obj.name = this.name;
-      }
-      return {
-        ...obj,
-        ...this.$attrs
-      };
-    }
-  },
-  methods: {
-    handleInput (e) {
-      this.emitInputEvent(e.target.value);
-    },
-    clear () {
-      // 把内容清空
-      this.emitInputEvent('');
-      this.$emit('clear');
-    },
-    emitInputEvent (data) {
-      this.$emit('input', data);
-      dispatch(this, {
-        eventName: 'validate',
-        componentName: 'LinFormItem'
-      });
-    },
+@Component({
+  name: 'LinInput'
+})
+export default class LinInput extends Vue {
+  @Prop({ type: String, default: '' })
+  placeholder!: string;
 
-    handlePassword () {
-      this.passwordVisible = !this.passwordVisible;
-    },
-    onBlur (e) {
-      this.$emit('blur', e);
-    },
-    onFocus (e) {
-      this.$emit('focus', e);
-    }
+  @Prop({ type: String, default: 'text' })
+  type!: string;
+
+  @Prop({ type: String, default: '' })
+  name!: string;
+
+  @Prop({ type: Boolean, default: false })
+  disabled!: boolean;
+
+  @Prop({ type: String, default: '' })
+  value!: string;
+
+  @Prop({ type: Boolean, default: false })
+  clearable!: boolean;
+
+  @Prop({ type: Boolean, default: false })
+  showPassword!: boolean;
+
+  @Prop({ type: Number, default: -1 })
+  maxlength!: number;
+
+  @Prop({ type: Number, default: -1 })
+  minlength!: number;
+
+  // 用于控制是否显示密码框
+  passwordVisible = false;
+
+  get showSuffix () {
+    return this.clearable || this.showPassword;
   }
-};
+
+  get inputAttr () {
+    const obj: Obj = {};
+    if (this.maxlength !== -1) {
+      obj.maxlength = this.maxlength;
+    }
+    if (this.minlength !== -1) {
+      obj.minlength = this.minlength;
+    }
+    if (this.name) {
+      obj.name = this.name;
+    }
+    return {
+      ...obj,
+      ...this.$attrs
+    };
+  }
+
+  handleInput (e) {
+    this.emitInputEvent(e.target.value);
+  }
+
+  clear () {
+    // 把内容清空
+    this.emitInputEvent('');
+    this.$emit('clear');
+  }
+
+  emitInputEvent (data) {
+    this.$emit('input', data);
+    dispatch(this, {
+      eventName: 'validate',
+      componentName: 'LinFormItem'
+    });
+  }
+
+  handlePassword () {
+    this.passwordVisible = !this.passwordVisible;
+  }
+
+  onBlur (e) {
+    this.$emit('blur', e);
+  }
+
+  onFocus (e) {
+    this.$emit('focus', e);
+  }
+}
 </script>
