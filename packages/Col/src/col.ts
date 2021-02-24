@@ -1,60 +1,61 @@
 import './style.scss';
 import { Style } from './type';
 
-export default {
+import { Vue, Component, Prop } from 'vue-property-decorator';
+
+@Component({
   name: 'LinCol',
-
-  props: {
-    tag: {
-      type: String,
-      default: 'div'
-    },
-    span: {
-      type: Number,
-      default: 24
-    },
-    offset: {
-      type: Number,
-      default: 0
-    },
-    pull: {
-      type: Number,
-      default: 0
-    },
-    push: {
-      type: Number,
-      default: 0
-    },
-    xs: [Number, Object],
-    sm: [Number, Object],
-    md: [Number, Object],
-    lg: [Number, Object]
-  },
-
   inject: {
-    row: {
+    RowInstance: {
       default: ''
     }
-  },
-  computed: {
-    gutter () {
-      if (this.row) {
-        return this.row.gutter;
-      }
-      return 0;
+  }
+})
+export default class LinCol extends Vue {
+  @Prop({ type: String, default: 'div' })
+  tag!: string;
+
+  @Prop({ type: Number, default: 24 })
+  span!: number;
+
+  @Prop({ type: Number, default: 0 })
+  offset!: number;
+
+  @Prop({ type: Number, default: 0 })
+  pull!: number;
+
+  @Prop({ type: Number, default: 0 })
+  push!: number;
+
+  @Prop({ type: [Number, Object] })
+  xs!: number | Record<string, any>;
+
+  @Prop({ type: [Number, Object] })
+  sm!: number | Record<string, any>;
+
+  @Prop({ type: [Number, Object] })
+  md!: number | Record<string, any>;
+
+  @Prop({ type: [Number, Object] })
+  lg!: number | Record<string, any>;
+
+  get gutter () {
+    if (this.RowInstance) {
+      return this.RowInstance.gutter;
     }
-  },
+    return 0;
+  }
 
   render (h) {
-    const style:Style = {};
-    const classList:string[] = [];
+    const style: Style = {};
+    const classList: string[] = [];
 
     if (this.gutter) {
       style.paddingLeft = `${this.gutter / 2}px`;
       style.paddingRight = style.paddingLeft;
     }
 
-    ['offset', 'push', 'pull', 'span'].forEach((key) => {
+    ['offset', 'push', 'pull', 'span'].forEach(key => {
       if (this[key]) {
         if (key !== 'span') {
           classList.push(`lin-col-${key}-${this[key]}`);
@@ -63,12 +64,12 @@ export default {
         }
       }
     });
-    ['xs', 'sm', 'md', 'lg'].forEach((size) => {
+    ['xs', 'sm', 'md', 'lg'].forEach(size => {
       if (typeof this[size] === 'number') {
         classList.push(`lin-col-${size}-${this[size]}`);
       } else if (typeof this[size] === 'object') {
         const props = this[size];
-        Object.keys(props).forEach((prop) => {
+        Object.keys(props).forEach(prop => {
           if (prop !== 'span') {
             classList.push(`lin-col-${size}-${prop}-${props[prop]}`);
           } else {
@@ -86,4 +87,4 @@ export default {
       this.$slots.default
     );
   }
-};
+}
