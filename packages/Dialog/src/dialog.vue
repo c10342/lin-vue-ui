@@ -33,55 +33,51 @@
     </div>
   </transition>
 </template>
-<script>
+
+<script lang="ts">
+import { Mixins, Component, Prop, PropSync } from 'vue-property-decorator';
 import LocaleMixin from 'src/mixins/locale';
 import DragMixin from 'src/mixins/drag';
 
-export default {
-  name: 'LinDialog',
-  mixins: [LocaleMixin, DragMixin],
-  props: {
-    title: {
-      type: String
-    },
-    width: {
-      type: String,
-      default: '50%'
-    },
-    top: {
-      type: String,
-      default: '15vh'
-    },
-    visible: {
-      type: Boolean,
-      default: false
-    },
-    beforeClose: {
-      type: Function
-    },
-    closeOnClickModa: {
-      type: Boolean,
-      default: true
-    }
-  },
+@Component({
+  name: 'LinDialog'
+})
+export default class LinDialog extends Mixins(LocaleMixin, DragMixin) {
+  @Prop({ type: String })
+  title!: string;
 
-  methods: {
-    handleClose () {
-      const done = () => {
-        this.$emit('update:visible', false);
-        this.$emit('close');
-      };
-      if (this.beforeClose) {
-        this.beforeClose(done);
-      } else {
-        done();
-      }
-    },
-    onWrapperClick () {
-      if (this.closeOnClickModa) {
-        this.handleClose();
-      }
+  @Prop({ type: String, default: '50%' })
+  width!: string;
+
+  @Prop({ type: String, default: '15vh' })
+  top!: string;
+
+  @Prop({ type: Function })
+  beforeClose!: (done: () => void) => void;
+
+  @Prop({ type: Boolean, default: true })
+  closeOnClickModa!: boolean;
+
+  @PropSync('visible', { type: Boolean, default: false })
+  isVisible!: boolean;
+
+  handleClose () {
+    const done = () => {
+      // this.$emit('update:visible', false);
+      this.isVisible = false;
+      this.$emit('close');
+    };
+    if (this.beforeClose) {
+      this.beforeClose(done);
+    } else {
+      done();
     }
   }
-};
+
+  onWrapperClick () {
+    if (this.closeOnClickModa) {
+      this.handleClose();
+    }
+  }
+}
 </script>
