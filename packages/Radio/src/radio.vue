@@ -22,68 +22,58 @@
   </label>
 </template>
 
-<script>
+<script lang="ts">
+import { Vue, Component, Prop } from 'vue-property-decorator';
 import dispatch from 'src/utils/dispatch';
 
-export default {
+@Component({
   name: 'LinRadio',
-  // 需要提供一个计算属性 model
   inject: {
-    RadioGroup: {
+    RadioGroupInstance: {
       default: ''
-    }
-  },
-  computed: {
-    model: {
-      get () {
-        // this.RadioGroup.value
-        return this.isGroup ? this.RadioGroup.value : this.value;
-      },
-      set (value) {
-        // 触发父组件给当前组件注册的input事件
-        // this.$emit("input", value);
-        // this.isGroup
-        //   ? this.RadioGroup.$emit('input', value)
-        //   : this.$emit('input', value);
-        if (this.isGroup) {
-          this.RadioGroup.$emit('input', value);
-        } else {
-          this.$emit('input', value);
-        }
-        dispatch(this, {
-          eventName: 'validate',
-          componentName: 'LinFormItem'
-        });
-      }
-    },
-    isGroup () {
-      // 用于判断radio是否被radioGroup所包裹
-      return !!this.RadioGroup;
-    },
-    isDisable () {
-      if (this.isGroup) {
-        if (this.RadioGroup.disabled) {
-          return true;
-        }
-      }
-      return this.disabled;
-      // return this.isGroup ? this.RadioGroup.disabled : this.disabled;
-    }
-  },
-  props: {
-    label: {
-      type: [String, Number, Boolean],
-      default: ''
-    },
-    value: null,
-    name: {
-      type: String,
-      default: ''
-    },
-    disabled: {
-      type: Boolean,
-      default: false
     }
   }
-};
+})
+export default class LinRadio extends Vue {
+  @Prop({ type: [String, Number, Boolean], default: '' })
+  label!:string|number|boolean
+
+  @Prop({ type: Object })
+  value!:any
+
+   @Prop({ type: String, default: '' })
+  name!:string
+
+   @Prop({ type: Boolean, default: false })
+  disabled!:boolean
+
+   get model () {
+     return this.isGroup ? this.RadioGroupInstance.value : this.value;
+   }
+
+   set model (value) {
+     if (this.isGroup) {
+       this.RadioGroupInstance.$emit('input', value);
+     } else {
+       this.$emit('input', value);
+     }
+     dispatch(this, {
+       eventName: 'validate',
+       componentName: 'LinFormItem'
+     });
+   }
+
+   get isGroup () {
+     return !!this.RadioGroupInstance;
+   }
+
+   get isDisable () {
+     if (this.isGroup) {
+       if (this.RadioGroupInstance.disabled) {
+         return true;
+       }
+     }
+     return this.disabled;
+   }
+}
 </script>
