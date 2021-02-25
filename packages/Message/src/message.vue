@@ -33,71 +33,60 @@
   </transition>
 </template>
 
-<script>
-export default {
-  name: 'LinMessage',
-  props: {
-    type: {
-      type: String,
-      default: 'info'
-    },
-    showClose: {
-      type: Boolean,
-      default: false
-    },
-    message: {
-      type: String
-    },
-    iconClass: {
-      type: String
-    },
-    dangerouslyUseHTMLString: {
-      type: Boolean,
-      default: false
-    },
-    customClass: {
-      type: String
-    },
-    // duration: {
-    //   type: Number,
-    //   default: 3000,
-    // },
-    center: {
-      type: Boolean,
-      default: false
-    },
-    onClose: {
-      type: Function
-    },
-    offset: {
-      type: Number,
-      default: 20
-    }
-  },
-  data () {
-    return {
-      show: false,
-      top: 0
-    };
-  },
-  methods: {
-    onCloseClick () {
-      if (this.show) {
-        this.show = false;
-        this.$emit('close');
-      }
-    },
-    afterLeave () {
-      this.$emit('closed');
-      if (this.onClose) {
-        this.onClose();
-      }
-    }
-  },
-  computed: {
-    offsetTop () {
-      return this.top + this.offset;
+<script lang="ts">
+import { Vue, Component, Prop } from 'vue-property-decorator';
+
+@Component({
+  name: 'LinMessage'
+})
+export default class LinMessage extends Vue {
+  @Prop({ type: String, default: 'info' })
+  type!: string;
+
+  @Prop({ type: Boolean, default: false })
+  showClose!: boolean;
+
+  @Prop({ type: String })
+  message!: string;
+
+  @Prop({ type: String })
+  iconClass!: string;
+
+  @Prop({ type: Boolean, default: false })
+  dangerouslyUseHTMLString!: boolean;
+
+  @Prop({ type: String })
+  customClass!: string;
+
+  @Prop({ type: Boolean, default: false })
+  center!: boolean;
+
+  @Prop({ type: Function })
+  onClose!: () => void;
+
+  @Prop({ type: Number, default: 20 })
+  offset!: number;
+
+  show = false;
+
+  top = 0;
+
+  get offsetTop () {
+    return this.top + this.offset;
+  }
+
+  onCloseClick () {
+    if (this.show) {
+      this.show = false;
+      this.$emit('close');
     }
   }
-};
+
+  afterLeave () {
+    this.$emit('closed');
+    if (this.onClose) {
+      this.onClose();
+    }
+  }
+}
 </script>

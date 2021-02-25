@@ -4,9 +4,11 @@ import Message from './message.vue';
 
 import './style.scss';
 
+import { Options, Instance } from './type';
+
 const MessageConstruct = Vue.extend(Message);
 
-const instanceList = [];
+const instanceList: Instance[] = [];
 
 function updateTop (index) {
   const length = instanceList.length - 1;
@@ -18,22 +20,22 @@ function updateTop (index) {
 }
 
 class LinMessage {
-  options = null;
+  options: Options = {};
 
-  instance = null;
+  instance: Instance | null = null;
 
   propsData = {};
 
-  timer = null;
+  timer:number|null = null;
 
-  constructor (options) {
+  constructor (options: Options | null) {
     this.options = options || {};
-    this.initProps(options);
+    this.initProps();
     this.init();
   }
 
   initProps () {
-    const props = [
+    const props: (keyof Options)[] = [
       'type',
       'showClose',
       'message',
@@ -45,7 +47,7 @@ class LinMessage {
       'offset'
     ];
     const propsData = {};
-    props.forEach((prop) => {
+    props.forEach(prop => {
       if (prop in this.options) {
         propsData[prop] = this.options[prop];
       }
@@ -76,25 +78,27 @@ class LinMessage {
   }
 
   saveOffsetTop () {
-    const index = instanceList.findIndex(
-      // eslint-disable-next-line
-      (instance) => instance._uid === this.instance._uid,
-    );
-    if (index > 0) {
-      const prevInstance = instanceList[index - 1];
-      const el = prevInstance.$el;
-      const height = el.offsetHeight;
-      const top = el.offsetTop;
-      this.instance.top = top + height;
-    } else {
-      this.instance.top = 0;
+    if (this.instance) {
+      const index = instanceList.findIndex(
+        // eslint-disable-next-line
+        instance => instance._uid === this.instance?._uid
+      );
+      if (index > 0) {
+        const prevInstance = instanceList[index - 1];
+        const el = prevInstance.$el as HTMLElement;
+        const height = el.offsetHeight;
+        const top = el.offsetTop;
+        this.instance.top = top + height;
+      } else {
+        this.instance.top = 0;
+      }
     }
   }
 
   setTimer () {
-    const { duration } = this.options;
+    const { duration } = this.options as Options;
     if (duration !== 0) {
-      this.timer = setTimeout(() => {
+      this.timer = window.setTimeout(() => {
         this.close();
       }, duration || 3000);
     }
@@ -110,7 +114,7 @@ class LinMessage {
     if (this.instance) {
       const index = instanceList.findIndex(
         // eslint-disable-next-line
-        (instance) => instance._uid === this.instance._uid,
+        instance => instance._uid === this.instance?._uid
       );
       if (index > -1) {
         updateTop(index);
@@ -121,6 +125,7 @@ class LinMessage {
     }
     if (this.timer) {
       clearTimeout(this.timer);
+      this.timer = null;
     }
     this.instance = null;
   }
@@ -167,7 +172,7 @@ createInstance.warning = function warning (options) {
 };
 
 createInstance.closeAll = function closeAll () {
-  instanceList.forEach((instance) => {
+  instanceList.forEach(instance => {
     instance.onCloseClick();
   });
 };
