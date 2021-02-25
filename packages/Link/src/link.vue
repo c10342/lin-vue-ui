@@ -19,37 +19,32 @@
   </a>
 </template>
 
-<script>
-export default {
-  name: 'LinLink',
-  props: {
-    type: {
-      type: String,
-      default: 'default'
-    },
-    underline: {
-      type: Boolean,
-      default: true
-    },
-    disabled: {
-      type: Boolean,
-      default: false
-    },
-    href: {
-      type: String,
-      default: ''
-    },
-    icon: {
-      type: String,
-      default: ''
-    }
-  },
-  methods: {
-    onClick (event) {
-      if (!this.href || this.disabled) {
-        event.preventDefault();
-      }
+<script lang="ts">
+import { Vue, Component, Prop } from 'vue-property-decorator';
+
+@Component({
+  name: 'LinLink'
+})
+export default class LinLink extends Vue {
+  @Prop({ type: String, default: 'default' })
+  type!:string
+
+  @Prop({ type: Boolean, default: true })
+  underline!:boolean
+
+  @Prop({ type: Boolean, default: false })
+  disabled!:boolean
+
+  @Prop({ type: String, default: '' })
+  href!:string
+
+  @Prop({ type: String, default: '' })
+  icon!:string
+
+  onClick (event) {
+    if (!this.href || this.disabled) {
+      event.preventDefault();
     }
   }
-};
+}
 </script>
