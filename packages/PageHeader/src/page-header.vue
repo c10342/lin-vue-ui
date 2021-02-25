@@ -33,36 +33,31 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { Mixins, Component, Prop } from 'vue-property-decorator';
 import LocaleMixin from 'src/mixins/locale';
 
-export default {
-  name: 'LinPageHeader',
-  mixins: [LocaleMixin],
-  props: {
-    back: {
-      type: Boolean,
-      default: true
-    },
-    backTip: {
-      type: String
-    },
-    title: {
-      type: String,
-      default: ''
-    },
-    right: {
-      type: Boolean,
-      default: false
-    },
-    active: {
-      type: Boolean,
-      default: false
-    },
-    border: {
-      type: Boolean,
-      default: false
-    }
-  }
-};
+@Component({
+  name: 'LinPageHeader'
+})
+export default class LinPageHeader extends Mixins(LocaleMixin) {
+  @Prop({ type: Boolean, default: true })
+  back!:boolean
+
+  @Prop({ type: String })
+  backTip!:string
+
+  @Prop({ type: String })
+  title!:string
+
+  @Prop({ type: Boolean, default: false })
+  right!:boolean
+
+  @Prop({ type: Boolean, default: false })
+  active!:boolean
+
+  @Prop({ type: Boolean, default: false })
+  border!:boolean
+}
+
 </script>
