@@ -2,7 +2,7 @@
  * 移除节点
  */
 
-import { VUE_META_ATTRIBUTE } from '../common/constants.js';
+import { VUE_META_ATTRIBUTE } from '../common/constants';
 
 export default function _removeNode (parent) {
   const children = parent.querySelectorAll(`[${VUE_META_ATTRIBUTE}]`);

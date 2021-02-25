@@ -1,6 +1,6 @@
-import _setAttr from './setAttribute.js';
+import _setAttr from './setAttribute';
 
-import _removeNode from './removeNode.js';
+import _removeNode from './removeNode';
 
 export default function operate () {
   const _ndHead = document.getElementsByTagName('head')[0];

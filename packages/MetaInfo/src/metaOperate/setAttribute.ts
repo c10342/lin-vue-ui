@@ -2,7 +2,7 @@
  * 设置dom属性
  */
 
-import { VUE_META_ATTRIBUTE } from '../common/constants.js';
+import { VUE_META_ATTRIBUTE } from '../common/constants';
 
 export default function _setAttr (el, opt) {
   el.setAttribute(VUE_META_ATTRIBUTE, true);
