@@ -1,8 +1,8 @@
-import LoadingConstruct from './construct.js';
+import LoadingConstruct from './construct';
 
-let instance = null;
+let instance:LoadingConstruct|null = null;
 
-let timer = null;
+let timer:number|null = null;
 
 export default {
   open (options) {
@@ -19,8 +19,8 @@ export default {
       if (timer) {
         clearTimeout(timer);
       }
-      timer = setTimeout(() => {
-        instance.close();
+      timer = window.setTimeout(() => {
+        instance?.close();
       }, options.time);
     }
 

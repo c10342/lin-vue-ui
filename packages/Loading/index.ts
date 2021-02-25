@@ -1,4 +1,4 @@
-import Loading from './src/loading.js';
+import Loading from './src/loading';
 
 export default {
   install (Vue) {

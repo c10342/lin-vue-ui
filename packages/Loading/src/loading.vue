@@ -17,23 +17,22 @@
   </transition>
 </template>
 
-<script>
-export default {
-  name: 'LinLoading',
-  data () {
-    return {
-      text: null,
-      fullscreen: true,
-      visible: false,
-      background: null,
-      iconColor: null,
-      textColor: null
-    };
-  },
-  methods: {
-    handleAfterLeave () {
-      this.$emit('after-leave');
-    }
-  }
-};
+<script lang="ts">
+import { Vue, Component } from 'vue-property-decorator';
+
+@Component({
+  name: 'LinLoading'
+})
+export default class LinLoading extends Vue {
+  text:string|null=null
+      fullscreen=true
+      visible=false
+      background:string|null=null
+      iconColor:string|null=null
+      textColor:string|null=null
+
+      handleAfterLeave () {
+        this.$emit('after-leave');
+      }
+}
 </script>
