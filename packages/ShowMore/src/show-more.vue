@@ -14,39 +14,12 @@
   </span>
 </template>
 
-<script>
+<script lang='ts'>
+import { Component, Mixins, Prop } from 'vue-property-decorator';
 import LocaleMixin from 'src/mixins/locale';
 
-export default {
+@Component({
   name: 'LinShowMore',
-  mixins: [LocaleMixin],
-  props: {
-    len: {
-      type: Number,
-      default: -1
-    },
-    text: {
-      type: String,
-      default: ''
-    },
-    showText: {
-      type: String
-    },
-    hiddenText: {
-      type: String
-    },
-    allowFold: Boolean
-  },
-  data () {
-    return {
-      textLen: this.len
-    };
-  },
-  methods: {
-    showMore () {
-      this.textLen = this.textLen === this.text.length ? this.len : this.text.length;
-    }
-  },
   filters: {
     filterText (value, textLen) {
       if (textLen !== -1 && textLen < value.length) {
@@ -55,5 +28,27 @@ export default {
       return value;
     }
   }
-};
+})
+export default class LinShowMore extends Mixins(LocaleMixin) {
+  @Prop({ type: Number, default: -1 })
+  len!:number
+
+  @Prop({ type: String, default: '' })
+  text!:string
+
+  @Prop({ type: String })
+  showText!:string
+
+  @Prop({ type: String })
+  hiddenText!:string
+
+  @Prop({ type: Boolean })
+  allowFold!:boolean
+
+  textLen = this.len
+
+  showMore () {
+    this.textLen = this.textLen === this.text.length ? this.len : this.text.length;
+  }
+}
 </script>
