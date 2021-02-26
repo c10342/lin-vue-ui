@@ -36,165 +36,57 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { Vue, Component, Prop } from 'vue-property-decorator';
 import ResizeObserver from 'resize-observer-polyfill';
-import Spinner from 'packages/Spinner/index.js';
+import Spinner from 'packages/Spinner/index';
 
-export default {
+@Component({
   name: 'LinScrollBar',
   components: {
     [Spinner.name]: Spinner
-  },
-  props: {
-    hover: {
-      type: Boolean,
-      default: false
-    },
-    height: {
-      type: String,
-      default: '100%'
-    },
-    width: {
-      type: String,
-      default: '100%'
-    },
-    maxHeight: {
-      type: String
-    },
-    minHeight: {
-      type: String
-    },
-    loading: {
-      type: Boolean,
-      default: false
-    },
-    loadingText: String,
-    loadingSize: String
-  },
-  data () {
-    return {
-      barHeight: 0,
-      barTop: 0,
-      showBar: false,
-      hoverBar: false
-    };
-  },
-  mounted () {
-    this.wrapperHeight = 0;
-    this.contentHeight = 0;
-    this.barWrapperHeight = 0;
-    this.startY = 0;
-    this.observer = null;
-    this.isMove = false;
-    this.isLeave = false;
-    this.init();
-    this.initObserver();
-  },
-  methods: {
-    initObserver () {
-      this.observer = new ResizeObserver(() => {
-        this.init();
-      });
+  }
+})
+export default class LinScrollBar extends Vue {
+  @Prop({ type: Boolean, default: false })
+  hover!:boolean
 
-      this.observer.observe(this.$refs.content);
-    },
-    init () {
-      this.initDom();
-      this.initBar();
-    },
-    initDom () {
-      this.wrapperHeight = this.$refs.wrapper.clientHeight;
-      this.contentHeight = this.$refs.content.clientHeight;
-    },
-    initBar () {
-      const { wrapperHeight } = this;
-      const { contentHeight } = this;
-      // 求 滚动条的高度
-      if (wrapperHeight / contentHeight < 1) {
-        this.barHeight = (wrapperHeight / contentHeight) * wrapperHeight;
-        this.showBar = true;
-      } else {
-        this.showBar = false;
-      }
-      if (this.showBar) {
-        const { scrollTop } = this.$refs.wrapper;
-        const percent = scrollTop / contentHeight;
-        const barTop = percent * wrapperHeight;
-        this.barTop = barTop;
-      }
-    },
-    onWrapperScroll (event) {
-      const { contentHeight } = this;
-      const { wrapperHeight } = this;
-      const { scrollTop } = event.target;
-      const percent = scrollTop / (contentHeight - wrapperHeight);
-      const barTop = percent * (wrapperHeight - this.barHeight);
-      this.barTop = barTop;
-      this.$emit('scroll', event);
-      if (scrollTop + wrapperHeight >= contentHeight) {
-        this.$emit('scrollToBottom', event);
-      }
-    },
-    onMouseDown (event) {
-      this.isMove = true;
-      document.getElementsByTagName('body')[0].classList.add('user-no-select');
-      this.startY = event.clientY;
-      document.addEventListener('mousemove', this.onMousemove);
-      document.addEventListener('mouseup', this.onMouseup);
-    },
-    onMousemove (event) {
-      // 纵轴坐标
-      const topY = event.clientY - this.startY;
-      const barTop = this.$refs.bar.offsetTop + topY;
-      this.updatePosition(barTop);
-      this.startY = event.clientY;
-    },
-    onMouseup () {
-      this.isMove = false;
-      if (this.isLeave) {
-        this.hoverBar = false;
-      }
-      document
-        .getElementsByTagName('body')[0]
-        .classList.remove('user-no-select');
-      document.removeEventListener('mousemove', this.onMousemove);
-      document.removeEventListener('mouseup', this.onMouseup);
-    },
-    updatePosition (barTop) {
-      const { wrapperHeight } = this;
-      const { contentHeight } = this;
-      const barHeight = this.$refs.bar.clientHeight;
-      if (barTop >= wrapperHeight - barHeight) {
-        barTop = wrapperHeight - barHeight;
-      }
-      if (barTop <= 0) {
-        barTop = 0;
-      }
-      this.barTop = barTop;
-      const percent = barTop / wrapperHeight;
-      const contentTop = percent * contentHeight;
-      this.$refs.wrapper.scrollTop = contentTop;
-    },
-    onMouseEnter () {
-      this.hoverBar = true;
-      this.isLeave = false;
-    },
-    onMouseLeave () {
-      this.isLeave = true;
-      if (!this.isMove) {
-        this.hoverBar = false;
-      }
-    },
-    onBarWrapperClick (event) {
-      const { clientY } = event;
-      const marginTop = this.$refs.wrapper.getBoundingClientRect().top;
-      // console.log(clientY,marginTop);
-      this.updatePosition(clientY - marginTop - this.barHeight / 2);
-    }
-  },
-  computed: {
-    style () {
-      const style = {};
+  @Prop({ type: String, default: '100%' })
+  height!:string
+
+  @Prop({ type: String, default: '100%' })
+  width!:string
+
+  @Prop({ type: String })
+  maxHeight!:string
+
+  @Prop({ type: String })
+  minHeight!:string
+
+  @Prop({ type: Boolean, default: false })
+  loading!:boolean
+
+  @Prop({ type: String })
+  loadingText!:string
+
+  @Prop({ type: String })
+  loadingSize!:string
+
+  barHeight= 0
+      barTop= 0
+      showBar= false
+      hoverBar= false
+
+      wrapperHeight = 0;
+    contentHeight = 0;
+    barWrapperHeight = 0;
+    startY = 0;
+    observer:ResizeObserver|null = null;
+    isMove = false;
+    isLeave = false;
+
+    get style () {
+      const style:{height?:string, 'max-height'?:string, 'min-height'?:string} = {};
       if (this.height) {
         style.height = this.height;
       }
@@ -206,14 +98,130 @@ export default {
       }
       return style;
     }
-  },
-  beforeDestroy () {
-    if (this.observer) {
-      this.observer.disconnect();
-      this.observer = null;
+
+    mounted () {
+      this.init();
+      this.initObserver();
     }
-    document.removeEventListener('mousemove', this.onMousemove);
-    document.removeEventListener('mouseup', this.onMouseup);
-  }
-};
+
+    beforeDestroy () {
+      if (this.observer) {
+        this.observer.disconnect();
+        this.observer = null;
+      }
+      document.removeEventListener('mousemove', this.onMousemove);
+      document.removeEventListener('mouseup', this.onMouseup);
+    }
+
+    initObserver () {
+      this.observer = new ResizeObserver(() => {
+        this.init();
+      });
+
+      this.observer.observe(this.$refs.content as HTMLElement);
+    }
+
+    init () {
+      this.initDom();
+      this.initBar();
+    }
+
+    initDom () {
+      this.wrapperHeight = (this.$refs.wrapper as HTMLElement).clientHeight;
+      this.contentHeight = (this.$refs.content as HTMLElement).clientHeight;
+    }
+
+    initBar () {
+      const { wrapperHeight } = this;
+      const { contentHeight } = this;
+      // 求 滚动条的高度
+      if (wrapperHeight / contentHeight < 1) {
+        this.barHeight = (wrapperHeight / contentHeight) * wrapperHeight;
+        this.showBar = true;
+      } else {
+        this.showBar = false;
+      }
+      if (this.showBar) {
+        const { scrollTop } = this.$refs.wrapper as HTMLElement;
+        const percent = scrollTop / contentHeight;
+        const barTop = percent * wrapperHeight;
+        this.barTop = barTop;
+      }
+    }
+
+    onWrapperScroll (event) {
+      const { contentHeight } = this;
+      const { wrapperHeight } = this;
+      const { scrollTop } = event.target;
+      const percent = scrollTop / (contentHeight - wrapperHeight);
+      const barTop = percent * (wrapperHeight - this.barHeight);
+      this.barTop = barTop;
+      this.$emit('scroll', event);
+      if (scrollTop + wrapperHeight >= contentHeight) {
+        this.$emit('scrollToBottom', event);
+      }
+    }
+
+    onMouseDown (event) {
+      this.isMove = true;
+      document.getElementsByTagName('body')[0].classList.add('user-no-select');
+      this.startY = event.clientY;
+      document.addEventListener('mousemove', this.onMousemove);
+      document.addEventListener('mouseup', this.onMouseup);
+    }
+
+    onMousemove (event) {
+      // 纵轴坐标
+      const topY = event.clientY - this.startY;
+      const barTop = (this.$refs.bar as HTMLElement).offsetTop + topY;
+      this.updatePosition(barTop);
+      this.startY = event.clientY;
+    }
+
+    onMouseup () {
+      this.isMove = false;
+      if (this.isLeave) {
+        this.hoverBar = false;
+      }
+      document
+        .getElementsByTagName('body')[0]
+        .classList.remove('user-no-select');
+      document.removeEventListener('mousemove', this.onMousemove);
+      document.removeEventListener('mouseup', this.onMouseup);
+    }
+
+    updatePosition (barTop) {
+      const { wrapperHeight } = this;
+      const { contentHeight } = this;
+      const barHeight = (this.$refs.bar as HTMLElement).clientHeight;
+      if (barTop >= wrapperHeight - barHeight) {
+        barTop = wrapperHeight - barHeight;
+      }
+      if (barTop <= 0) {
+        barTop = 0;
+      }
+      this.barTop = barTop;
+      const percent = barTop / wrapperHeight;
+      const contentTop = percent * contentHeight;
+      (this.$refs.wrapper as HTMLElement).scrollTop = contentTop;
+    }
+
+    onMouseEnter () {
+      this.hoverBar = true;
+      this.isLeave = false;
+    }
+
+    onMouseLeave () {
+      this.isLeave = true;
+      if (!this.isMove) {
+        this.hoverBar = false;
+      }
+    }
+
+    onBarWrapperClick (event) {
+      const { clientY } = event;
+      const marginTop = (this.$refs.wrapper as HTMLElement).getBoundingClientRect().top;
+      this.updatePosition(clientY - marginTop - this.barHeight / 2);
+    }
+}
 </script>
