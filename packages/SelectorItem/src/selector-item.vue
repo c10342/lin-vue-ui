@@ -8,54 +8,52 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang='ts'>
+import { Vue, Component, Prop } from 'vue-property-decorator';
+
+@Component({
   name: 'LinSelectorItem',
-  props: {
-    label: {
-      type: String,
-      default: ''
-    },
-    value: {
-      default: ''
-    },
-    disabled: {
-      type: Boolean,
-      default: false
-    }
-  },
   inject: {
-    group: {
+    SelectorGroupInstance: {
       default: ''
-    }
-  },
-  computed: {
-    active () {
-      if (this.group) {
-        const { valueKey } = this.group;
-        const { toString } = Object.prototype;
-        if (toString.call(this.value) === '[object Object]' && valueKey) {
-          return this.value[valueKey] === this.group.value[valueKey];
-        }
-        return this.value === this.group.value;
-      }
-      return false;
-    },
-    isDisabled () {
-      if (this.group && this.group.disabled) {
-        return true;
-      }
-      return this.disabled;
-    }
-  },
-  methods: {
-    onClick () {
-      if (this.group && !this.isDisabled) {
-        const value = JSON.parse(JSON.stringify(this.value));
-        this.group.$emit('input', value);
-        this.group.$emit('onChange', value);
-      }
     }
   }
-};
+})
+export default class LinSelectorItem extends Vue {
+  @Prop({ type: String, default: '' })
+  label!:string
+
+  @Prop({ type: [Object, String, Number], default: '' })
+  value!:Record<string, any>|string|number
+
+  @Prop({ type: Boolean, default: false })
+  disabled!:boolean
+
+  get active () {
+    if (this.SelectorGroupInstance) {
+      const { valueKey } = this.SelectorGroupInstance;
+      const { toString } = Object.prototype;
+      if (toString.call(this.value) === '[object Object]' && valueKey) {
+        return this.value[valueKey] === this.SelectorGroupInstance.value[valueKey];
+      }
+      return this.value === this.SelectorGroupInstance.value;
+    }
+    return false;
+  }
+
+  get isDisabled () {
+    if (this.SelectorGroupInstance && this.SelectorGroupInstance.disabled) {
+      return true;
+    }
+    return this.disabled;
+  }
+
+  onClick () {
+    if (this.SelectorGroupInstance && !this.isDisabled) {
+      const value = JSON.parse(JSON.stringify(this.value));
+      this.SelectorGroupInstance.$emit('input', value);
+      this.SelectorGroupInstance.$emit('onChange', value);
+    }
+  }
+}
 </script>
